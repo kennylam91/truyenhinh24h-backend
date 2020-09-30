@@ -3,8 +3,13 @@ package com.truyenhinh24h.controller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,23 +28,48 @@ public class ChannelController {
 	private ChannelService channelService;
 
 	@PostMapping
-	public ResponseEntity<ChannelDto> create(@RequestBody ChannelForm channelForm) {
+	public ResponseEntity<ChannelDto> createOrUpdate(@RequestBody ChannelForm channelForm) {
 		logger.info("Create channel");
 		ChannelDto channelDto = mapper(channelForm);
 		try {
-			ChannelDto createdChannel = channelService.create(channelDto);
-			return ResponseEntity.ok(createdChannel);
+			ChannelDto channel = channelService.createOrUpdate(channelDto);
+			logger.info("Channel created: {}", channel);
+			return ResponseEntity.ok(channel);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return ResponseEntity.status(500).body(null);
 		}
 	}
-	
+
 	@PostMapping(path = "/{delete-multi}")
-	public ResponseEntity<Void> deleteMulti(@RequestBody ChannelForm channelForm){
+	public ResponseEntity<Void> deleteMulti(@RequestBody ChannelForm channelForm) {
 		try {
 			channelService.deleteMulti(channelForm.getChannelIds());
 			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseEntity.status(500).build();
+		}
+	}
+
+	@PostMapping(path = "/get-all")
+	public ResponseEntity<Page<ChannelDto>> getAll(@RequestBody ChannelForm channelForm) {
+		try {
+			Sort sort = Sort.by(Sort.Direction.ASC, "name");
+			Pageable pageable = PageRequest.of(channelForm.getPage() - 1, channelForm.getLimit(), sort);
+			Page<ChannelDto> result = channelService.getAll(pageable);
+			return ResponseEntity.ok(result);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseEntity.status(500).build();
+		}
+	}
+	
+	@GetMapping(path = "/{channelId}")
+	public ResponseEntity<ChannelDto> getDetail(@PathVariable Long channelId){
+		try {
+			ChannelDto channelDto = channelService.findById(channelId);
+			return ResponseEntity.ok(channelDto);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return ResponseEntity.status(500).build();
@@ -53,7 +83,6 @@ public class ChannelController {
 		ChannelDto channelDto = new ChannelDto();
 		channelDto.setChannelId(channel.getChannelId());
 		channelDto.setName(channel.getName());
-		channelDto.setCategories(channel.getCategories());
 		channelDto.setDescription(channel.getDescription());
 		channelDto.setLogoUrl(channel.getLogoUrl());
 		channelDto.setNetworkId(channel.getNetworkId());

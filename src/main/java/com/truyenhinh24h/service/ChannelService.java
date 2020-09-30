@@ -1,6 +1,13 @@
 package com.truyenhinh24h.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.truyenhinh24h.dao.ChannelRepository;
@@ -16,11 +23,16 @@ public class ChannelService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 
-	public ChannelDto create(ChannelDto channelDto) {
+	public ChannelDto createOrUpdate(ChannelDto channelDto) {
 		Channel channelEntity = mapper(channelDto);
-		channelEntity.setChannelId(sequenceGeneratorService.generateSequence(Channel.SEQUENCE_NAME));
-		Channel insertedChannel = channelRepository.save(channelEntity);
-		return mapper(insertedChannel);
+		Channel result = null;
+		if (channelEntity.getChannelId() == null) {
+			channelEntity.setChannelId(sequenceGeneratorService.generateSequence(Channel.SEQUENCE_NAME));
+			result = channelRepository.insert(channelEntity);
+		} else {
+			result = channelRepository.save(channelEntity);
+		}
+		return mapper(result);
 
 	}
 	
@@ -35,7 +47,6 @@ public class ChannelService {
 		Channel channelEntity = new Channel();
 		channelEntity.setChannelId(channel.getChannelId());
 		channelEntity.setName(channel.getName());
-		channelEntity.setCategories(channel.getCategories());
 		channelEntity.setDescription(channel.getDescription());
 		channelEntity.setLogoUrl(channel.getLogoUrl());
 		channelEntity.setNetworkId(channel.getNetworkId());
@@ -50,12 +61,32 @@ public class ChannelService {
 		ChannelDto channelDto = new ChannelDto();
 		channelDto.setChannelId(channel.getChannelId());
 		channelDto.setName(channel.getName());
-		channelDto.setCategories(channel.getCategories());
 		channelDto.setDescription(channel.getDescription());
 		channelDto.setLogoUrl(channel.getLogoUrl());
 		channelDto.setNetworkId(channel.getNetworkId());
 		channelDto.setVip(channel.isVip());
 		return channelDto;
+	}
+
+	public Page<ChannelDto> getAll(Pageable pageable) {
+		Page<Channel> channelPage = channelRepository.findAll(pageable);
+		List<ChannelDto> channelDtoList = null;
+		if(channelPage.hasContent()) {
+			channelDtoList = channelPage.getContent().stream()
+					.map(this::mapper)
+					.collect(Collectors.toList());
+		}
+		Page<ChannelDto> channelDtoPage = new PageImpl<ChannelDto>(channelDtoList, pageable, channelPage.getTotalElements());
+		return channelDtoPage;
+	}
+
+	public ChannelDto findById(Long channelId) {
+		Optional<Channel> optional = channelRepository.findById(channelId);
+		if (optional.isPresent()) {
+			return mapper(optional.get());
+		} else {
+			return null;
+		}
 	}
 
 }

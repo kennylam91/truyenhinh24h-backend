@@ -15,8 +15,6 @@ public class ChannelForm extends BaseForm {
 
 	private String description;
 
-	Set<String> categories;
-
 	private String logoUrl;
 
 	private boolean vip;
