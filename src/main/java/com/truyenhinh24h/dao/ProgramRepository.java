@@ -8,4 +8,5 @@ import com.truyenhinh24h.model.Program;
 @Repository
 public interface ProgramRepository extends MongoRepository<Program, Long>{
 
+	void deleteByProgramIdIn(Long[] ids);
 }

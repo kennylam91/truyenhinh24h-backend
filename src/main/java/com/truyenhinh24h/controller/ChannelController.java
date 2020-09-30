@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,18 +38,19 @@ public class ChannelController {
 			return ResponseEntity.ok(channel);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return ResponseEntity.status(500).body(null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
-	@PostMapping(path = "/{delete-multi}")
+	@PostMapping(path = "/delete-multi")
 	public ResponseEntity<Void> deleteMulti(@RequestBody ChannelForm channelForm) {
 		try {
 			channelService.deleteMulti(channelForm.getChannelIds());
+			logger.info("Deleted Channel: {}", channelForm.getChannelIds().toString());
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return ResponseEntity.status(500).build();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 
@@ -61,7 +63,7 @@ public class ChannelController {
 			return ResponseEntity.ok(result);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return ResponseEntity.status(500).build();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 	
@@ -72,7 +74,7 @@ public class ChannelController {
 			return ResponseEntity.ok(channelDto);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-			return ResponseEntity.status(500).build();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
 

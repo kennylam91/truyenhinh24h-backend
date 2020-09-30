@@ -2,10 +2,16 @@ package com.truyenhinh24h.controller;
 
 import java.util.Set;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Value
-public class ProgramForm {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProgramForm extends BaseForm {
 
 	private Long programId;
 	
@@ -20,4 +26,6 @@ public class ProgramForm {
 	private float rate;
 	
 	private long year;
+	
+	private Long[] programIds;
 }

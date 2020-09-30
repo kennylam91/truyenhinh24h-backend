@@ -1,6 +1,13 @@
 package com.truyenhinh24h.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.truyenhinh24h.dao.ProgramRepository;
@@ -28,6 +35,31 @@ public class ProgramService {
 		return mapper(result);
 	}
 	
+	public void deleteMulti(Long[] ids) {
+		programRepository.deleteByProgramIdIn(ids);
+	}
+	
+	public ProgramDto findById(Long id) {
+		Optional<Program> optional = programRepository.findById(id);
+		if (optional.isPresent()) {
+			return mapper(optional.get());
+		} else {
+			return null;
+		}
+	}
+	
+	public Page<ProgramDto> getAll(Pageable pageable){
+		Page<Program> programPage = programRepository.findAll(pageable);
+		List<ProgramDto> programDtoList = null;
+		if(programPage.hasContent()) {
+			programDtoList = programPage.getContent().stream()
+					.map(this::mapper)
+					.collect(Collectors.toList());
+		}
+		Page<ProgramDto> programDtoPage = new PageImpl<ProgramDto>(programDtoList, pageable, 
+				programPage.getTotalElements());
+		return programDtoPage;
+	}
 	
 	Program mapper(ProgramDto programDto) {
 		if(programDto == null) {
