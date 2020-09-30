@@ -11,7 +11,7 @@ import lombok.Data;
 public class Category {
 	
 	@Transient
-	public static final String SEQUENCE_NAME = "categories_sequence";
+	public static final String SEQUENCE_NAME = "category_sequence";
 	
 	@Id
 	private Long categoryId;

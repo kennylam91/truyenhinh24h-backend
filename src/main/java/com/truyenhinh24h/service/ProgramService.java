@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import com.truyenhinh24h.dao.CategoryRepository;
 import com.truyenhinh24h.dao.ProgramRepository;
-import com.truyenhinh24h.model.Category;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
 
