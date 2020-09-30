@@ -13,11 +13,13 @@ public class ProgramDto {
 	
 	private String description;
 	
-	private Set<Long> categoryIds;
+	private Long[] categoryIds;
 	
 	private String logoUrl;
 	
 	private float rate;
 	
 	private long year;
+	
+	private Set<Category> categories;
 }

@@ -10,7 +10,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.truyenhinh24h.dao.CategoryRepository;
 import com.truyenhinh24h.dao.ProgramRepository;
+import com.truyenhinh24h.model.Category;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
 
@@ -19,6 +21,9 @@ public class ProgramService {
 
 	@Autowired
 	private ProgramRepository programRepository;
+	
+	@Autowired
+	private CategoryRepository categoryRepository;
 	
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
@@ -42,21 +47,26 @@ public class ProgramService {
 	public ProgramDto findById(Long id) {
 		Optional<Program> optional = programRepository.findById(id);
 		if (optional.isPresent()) {
-			return mapper(optional.get());
+			ProgramDto programDto = mapper(optional.get());
+			programDto.setCategories(categoryRepository.findByCategoryIdIn(programDto.getCategoryIds()));
+			return programDto;
 		} else {
 			return null;
 		}
 	}
 	
-	public Page<ProgramDto> getAll(Pageable pageable){
+	public Page<ProgramDto> getAll(Pageable pageable) {
 		Page<Program> programPage = programRepository.findAll(pageable);
 		List<ProgramDto> programDtoList = null;
-		if(programPage.hasContent()) {
-			programDtoList = programPage.getContent().stream()
-					.map(this::mapper)
-					.collect(Collectors.toList());
+		if (programPage.hasContent()) {
+			programDtoList = programPage.getContent().stream().map(this::mapper).collect(Collectors.toList());
+			for (ProgramDto programDto : programDtoList) {
+				if(programDto.getCategoryIds() != null && programDto.getCategoryIds().length > 0) {
+					programDto.setCategories(categoryRepository.findByCategoryIdIn(programDto.getCategoryIds()));
+				}
+			}
 		}
-		Page<ProgramDto> programDtoPage = new PageImpl<ProgramDto>(programDtoList, pageable, 
+		Page<ProgramDto> programDtoPage = new PageImpl<ProgramDto>(programDtoList, pageable,
 				programPage.getTotalElements());
 		return programDtoPage;
 	}

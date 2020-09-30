@@ -19,7 +19,7 @@ public class ProgramForm extends BaseForm {
 	
 	private String description;
 	
-	private Set<Long> categoryIds;
+	private Long[] categoryIds;
 	
 	private String logoUrl;
 	
