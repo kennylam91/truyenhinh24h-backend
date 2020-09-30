@@ -43,15 +43,18 @@ public class ScheduleController {
 		}
 	}
 	
-//	@PostMapping
-//	public ResponseEntity<Page<ScheduleDto>> getAll(@RequestBody ScheduleForm scheduleForm){
-//		try {
-//			Sort sort = Sort.by(Sort.Direction.ASC, "startTime");
-//			Pageable pageable = PageRequest.of(scheduleForm.getPage() -1 , scheduleForm.getLimit(), sort);
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-//	}
+	@PostMapping(path = "/search")
+	public ResponseEntity<Page<ScheduleDto>> search(@RequestBody ScheduleForm scheduleForm){
+		try {
+			Pageable pageable = PageRequest.of(scheduleForm.getPage() - 1 , scheduleForm.getLimit());
+			ScheduleDto scheduleDto = mapper(scheduleForm);
+			Page<ScheduleDto> scheduleDtoPage = scheduleService.search(pageable, scheduleDto);
+			return ResponseEntity.ok(scheduleDtoPage);
+		} catch (Exception e) {
+			logger.error(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
 	
 	private ScheduleDto mapper(ScheduleForm data) {
 		if(data == null) {

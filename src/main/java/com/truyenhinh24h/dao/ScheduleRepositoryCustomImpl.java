@@ -27,10 +27,19 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 			if (scheduleDto.getChannelId() != null) {
 				query.addCriteria(where("channelId").is(scheduleDto.getChannelId()));
 			}
+			if(scheduleDto.getProgramId() != null) {
+				query.addCriteria(where("programId").is(scheduleDto.getProgramId()));
+			}
+			if(scheduleDto.getStartTime() != null) {
+				query.addCriteria(where("startTime").gte(scheduleDto.getStartTime()));
+			}
+			if(scheduleDto.getEndTime() != null) {
+				query.addCriteria(where("endTime").lte(scheduleDto.getEndTime()));
+			}
 		}
 		query.with(Sort.by(Sort.Direction.DESC, "startTime"));
 		if (pageable != null) {
-			query.with(PageRequest.of(pageable.getPageNumber() - 1, pageable.getPageSize()));
+			query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
 		}
 		List<Schedule> schedules = mongoTemplate.find(query, Schedule.class);
 		long total = mongoTemplate.count(query, Schedule.class);
