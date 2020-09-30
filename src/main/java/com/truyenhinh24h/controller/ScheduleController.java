@@ -5,6 +5,10 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +42,16 @@ public class ScheduleController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
+	
+//	@PostMapping
+//	public ResponseEntity<Page<ScheduleDto>> getAll(@RequestBody ScheduleForm scheduleForm){
+//		try {
+//			Sort sort = Sort.by(Sort.Direction.ASC, "startTime");
+//			Pageable pageable = PageRequest.of(scheduleForm.getPage() -1 , scheduleForm.getLimit(), sort);
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//		}
+//	}
 	
 	private ScheduleDto mapper(ScheduleForm data) {
 		if(data == null) {

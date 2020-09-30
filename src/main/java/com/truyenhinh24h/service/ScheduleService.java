@@ -1,6 +1,13 @@
 package com.truyenhinh24h.service;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.truyenhinh24h.dao.ScheduleRepository;
@@ -26,6 +33,17 @@ public class ScheduleService {
 			result = scheduleRepository.save(schedule);
 		}
 		return mapper(result);
+	}
+	
+	public Page<ScheduleDto> search(Pageable pageable, ScheduleDto scheduleDto) {
+		Page<Schedule> schedulePage = scheduleRepository.search(scheduleDto, pageable);
+		if (!schedulePage.hasContent()) {
+			return new PageImpl<>(Collections.emptyList(), pageable, 0);
+		} else {
+			List<Schedule> scheduleList = schedulePage.getContent();
+			List<ScheduleDto> scheduleDtoList = scheduleList.stream().map(this::mapper).collect(Collectors.toList());
+			return new PageImpl<>(scheduleDtoList, pageable, schedulePage.getTotalElements());
+		}
 	}
 	
 	Schedule mapper(ScheduleDto data) {

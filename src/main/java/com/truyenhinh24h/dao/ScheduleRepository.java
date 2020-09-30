@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.truyenhinh24h.model.Schedule;
 
 @Repository
-public interface ScheduleRepository extends MongoRepository<Schedule, Long>{
+public interface ScheduleRepository extends MongoRepository<Schedule, Long>, ScheduleRepositoryCustom{
 
 }
