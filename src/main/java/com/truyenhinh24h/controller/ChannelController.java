@@ -24,19 +24,27 @@ public class ChannelController {
 
 	@PostMapping
 	public ResponseEntity<ChannelDto> create(@RequestBody ChannelForm channelForm) {
+		logger.info("Create channel");
 		ChannelDto channelDto = mapper(channelForm);
 		try {
 			ChannelDto createdChannel = channelService.create(channelDto);
 			return ResponseEntity.ok(createdChannel);
 		} catch (Exception e) {
+			logger.error(e.getMessage());
 			return ResponseEntity.status(500).body(null);
 		}
 	}
 	
-//	@PostMapping(path = "/{delete-multi}")
-//	public ResponseEntity<Void> deleteMulti(@RequestBody ChannelForm channelForm){
-//		
-//	}
+	@PostMapping(path = "/{delete-multi}")
+	public ResponseEntity<Void> deleteMulti(@RequestBody ChannelForm channelForm){
+		try {
+			channelService.deleteMulti(channelForm.getChannelIds());
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseEntity.status(500).build();
+		}
+	}
 
 	private ChannelDto mapper(ChannelForm channel) {
 		if (channel == null) {

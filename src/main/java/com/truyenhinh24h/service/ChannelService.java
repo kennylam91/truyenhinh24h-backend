@@ -24,6 +24,10 @@ public class ChannelService {
 
 	}
 	
+	public void deleteMulti(Long[] ids) {
+		channelRepository.deleteByChannelIdIn(ids);
+	}
+	
 	Channel mapper(ChannelDto channel) {
 		if(channel == null) {
 			return null;
