@@ -76,7 +76,8 @@ public class ChannelService {
 					.map(this::mapper)
 					.collect(Collectors.toList());
 		}
-		Page<ChannelDto> channelDtoPage = new PageImpl<ChannelDto>(channelDtoList, pageable, channelPage.getTotalElements());
+		Page<ChannelDto> channelDtoPage = new PageImpl<ChannelDto>(channelDtoList, pageable, 
+				channelPage.getTotalElements());
 		return channelDtoPage;
 	}
 
