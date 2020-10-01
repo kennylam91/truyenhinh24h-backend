@@ -17,6 +17,8 @@ public class ProgramForm extends BaseForm {
 	
 	private String name;
 	
+	private String enName;
+	
 	private String description;
 	
 	private Long[] categoryIds;

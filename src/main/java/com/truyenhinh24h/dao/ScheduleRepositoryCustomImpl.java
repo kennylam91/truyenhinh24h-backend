@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.truyenhinh24h.controller.ScheduleForm;
 import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.model.ScheduleDto;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -21,26 +22,26 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 	private MongoTemplate mongoTemplate;
 
 	@Override
-	public Page<Schedule> search(ScheduleDto scheduleDto, Pageable pageable) {
+	public Page<Schedule> search(ScheduleForm scheduleForm, Pageable pageable) throws Exception {
+		if (pageable == null) {
+			throw new IllegalArgumentException("Pageable must not be null");
+		}
 		final Query query = new Query();
-		if (scheduleDto != null) {
-			if (scheduleDto.getChannelId() != null) {
-				query.addCriteria(where("channelId").is(scheduleDto.getChannelId()));
+		if (scheduleForm != null) {
+			if (scheduleForm.getChannelId() != null) {
+				query.addCriteria(where("channelId").is(scheduleForm.getChannelId()));
 			}
-			if(scheduleDto.getProgramId() != null) {
-				query.addCriteria(where("programId").is(scheduleDto.getProgramId()));
+			if (scheduleForm.getProgramId() != null) {
+				query.addCriteria(where("programId").is(scheduleForm.getProgramId()));
 			}
-			if(scheduleDto.getStartTime() != null) {
-				query.addCriteria(where("startTime").gte(scheduleDto.getStartTime()));
+			if (scheduleForm.getStartTime() != null) {
+				query.addCriteria(where("startTime").gte(scheduleForm.getStartTime()));
 			}
-			if(scheduleDto.getEndTime() != null) {
-				query.addCriteria(where("endTime").lte(scheduleDto.getEndTime()));
+			if (scheduleForm.getEndTime() != null) {
+				query.addCriteria(where("endTime").lte(scheduleForm.getEndTime()));
 			}
 		}
-		query.with(Sort.by(Sort.Direction.DESC, "startTime"));
-		if (pageable != null) {
-			query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()));
-		}
+		query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
 		List<Schedule> schedules = mongoTemplate.find(query, Schedule.class);
 		long total = mongoTemplate.count(query, Schedule.class);
 		return new PageImpl<>(schedules, pageable, total);

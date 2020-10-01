@@ -25,12 +25,12 @@ import com.truyenhinh24h.service.ScheduleService;
 public class ScheduleController {
 
 	private static final Logger logger = LogManager.getLogger(ScheduleController.class);
-	
+
 	@Autowired
 	private ScheduleService scheduleService;
-	
+
 	@PostMapping
-	public ResponseEntity<ScheduleDto> createOrUpdate(@Valid @RequestBody ScheduleForm scheduleForm){
+	public ResponseEntity<ScheduleDto> createOrUpdate(@Valid @RequestBody ScheduleForm scheduleForm) {
 		logger.info("Create Schedule");
 		ScheduleDto scheduleDto = mapper(scheduleForm);
 		try {
@@ -42,22 +42,20 @@ public class ScheduleController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	
+
 	@PostMapping(path = "/search")
-	public ResponseEntity<Page<ScheduleDto>> search(@RequestBody ScheduleForm scheduleForm){
+	public ResponseEntity<Page<ScheduleDto>> search(@RequestBody ScheduleForm scheduleForm) {
 		try {
-			Pageable pageable = PageRequest.of(scheduleForm.getPage() - 1 , scheduleForm.getLimit());
-			ScheduleDto scheduleDto = mapper(scheduleForm);
-			Page<ScheduleDto> scheduleDtoPage = scheduleService.search(pageable, scheduleDto);
+			Page<ScheduleDto> scheduleDtoPage = scheduleService.search(scheduleForm);
 			return ResponseEntity.ok(scheduleDtoPage);
 		} catch (Exception e) {
 			logger.error(e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	
+
 	private ScheduleDto mapper(ScheduleForm data) {
-		if(data == null) {
+		if (data == null) {
 			return null;
 		}
 		ScheduleDto schedule = new ScheduleDto();
@@ -69,6 +67,6 @@ public class ScheduleController {
 		schedule.setScheduleId(data.getScheduleId());
 		schedule.setStartTime(data.getStartTime());
 		return schedule;
-		
+
 	}
 }

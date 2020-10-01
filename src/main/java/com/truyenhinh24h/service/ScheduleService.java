@@ -4,18 +4,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.truyenhinh24h.controller.ScheduleController;
+import com.truyenhinh24h.controller.ScheduleForm;
 import com.truyenhinh24h.dao.ScheduleRepository;
 import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.model.ScheduleDto;
 
 @Service
 public class ScheduleService {
+	
+	private static final Logger logger = LogManager.getLogger(ScheduleService.class);
+
 	
 	@Autowired
 	private ScheduleRepository scheduleRepository;
@@ -35,9 +44,16 @@ public class ScheduleService {
 		return mapper(result);
 	}
 	
-	public Page<ScheduleDto> search(Pageable pageable, ScheduleDto scheduleDto) {
-		Page<Schedule> schedulePage = scheduleRepository.search(scheduleDto, pageable);
-		if (!schedulePage.hasContent()) {
+	public Page<ScheduleDto> search(ScheduleForm scheduleForm) {
+		Pageable pageable = PageRequest.of(scheduleForm.getPage() - 1, scheduleForm.getLimit(), 
+				Sort.by(Sort.Direction.ASC, "startTime"));
+		Page<Schedule> schedulePage = null;
+		try {
+			schedulePage = scheduleRepository.search(scheduleForm, pageable);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		if (schedulePage != null && !schedulePage.hasContent()) {
 			return new PageImpl<>(Collections.emptyList(), pageable, 0);
 		} else {
 			List<Schedule> scheduleList = schedulePage.getContent();

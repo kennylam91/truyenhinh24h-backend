@@ -79,6 +79,7 @@ public class ProgramService {
 		program.setDescription(programDto.getDescription());
 		program.setLogoUrl(programDto.getLogoUrl());
 		program.setName(programDto.getName());
+		program.setEnName(programDto.getEnName());
 		program.setProgramId(programDto.getProgramId());
 		program.setRate(programDto.getRate());
 		program.setYear(programDto.getYear());
@@ -94,6 +95,7 @@ public class ProgramService {
 		programDto.setDescription(program.getDescription());
 		programDto.setLogoUrl(program.getLogoUrl());
 		programDto.setName(program.getName());
+		programDto.setEnName(program.getEnName());
 		programDto.setProgramId(program.getProgramId());
 		programDto.setRate(program.getRate());
 		programDto.setYear(program.getYear());

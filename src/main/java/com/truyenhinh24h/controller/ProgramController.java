@@ -90,6 +90,7 @@ public class ProgramController {
 		programDto.setDescription(program.getDescription());
 		programDto.setLogoUrl(program.getLogoUrl());
 		programDto.setName(program.getName());
+		programDto.setEnName(program.getEnName());
 		programDto.setProgramId(program.getProgramId());
 		programDto.setRate(program.getRate());
 		programDto.setYear(program.getYear());
