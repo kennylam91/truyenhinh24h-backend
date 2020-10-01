@@ -7,11 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
 import com.truyenhinh24h.controller.ScheduleForm;
 import com.truyenhinh24h.model.Schedule;
-import com.truyenhinh24h.model.ScheduleDto;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 import java.util.List;

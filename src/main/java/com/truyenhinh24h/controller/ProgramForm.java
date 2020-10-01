@@ -30,4 +30,6 @@ public class ProgramForm extends BaseForm {
 	private long year;
 	
 	private Long[] programIds;
+	
+	private String searchName;
 }

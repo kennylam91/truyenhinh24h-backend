@@ -53,7 +53,7 @@ public class ScheduleService {
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
-		if (schedulePage != null && !schedulePage.hasContent()) {
+		if (schedulePage == null || !schedulePage.hasContent()) {
 			return new PageImpl<>(Collections.emptyList(), pageable, 0);
 		} else {
 			List<Schedule> scheduleList = schedulePage.getContent();
