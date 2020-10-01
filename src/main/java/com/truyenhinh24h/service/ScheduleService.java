@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.truyenhinh24h.controller.ScheduleController;
 import com.truyenhinh24h.controller.ScheduleForm;
 import com.truyenhinh24h.dao.ScheduleRepository;
 import com.truyenhinh24h.model.Schedule;

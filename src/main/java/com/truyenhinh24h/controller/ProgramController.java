@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.truyenhinh24h.model.ChannelDto;
 import com.truyenhinh24h.model.ProgramDto;
 import com.truyenhinh24h.service.ProgramService;
 
@@ -75,6 +74,17 @@ public class ProgramController {
 			Pageable pageable = PageRequest.of(programForm.getPage() - 1, programForm.getLimit(), sort);
 			Page<ProgramDto> result = programService.getAll(pageable);
 			return ResponseEntity.ok(result);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
+	@PostMapping(path = "/search")
+	public ResponseEntity<Page<ProgramDto>> search(@RequestBody ProgramForm programForm) {
+		try {
+			Page<ProgramDto> programDtoPage = programService.search(programForm);
+			return ResponseEntity.ok(programDtoPage);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

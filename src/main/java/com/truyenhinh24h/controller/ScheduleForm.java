@@ -5,8 +5,6 @@ import java.util.Date;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-import com.mongodb.annotations.NotThreadSafe;
-
 import lombok.Setter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

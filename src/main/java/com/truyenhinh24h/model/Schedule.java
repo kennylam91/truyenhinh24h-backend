@@ -2,14 +2,9 @@ package com.truyenhinh24h.model;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.mongodb.annotations.NotThreadSafe;
 
 import lombok.Data;
 

@@ -20,8 +20,6 @@ import com.truyenhinh24h.dao.CategoryRepository;
 import com.truyenhinh24h.dao.ProgramRepository;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
-import com.truyenhinh24h.model.Schedule;
-import com.truyenhinh24h.model.ScheduleDto;
 
 @Service
 public class ProgramService {
@@ -82,8 +80,11 @@ public class ProgramService {
 	}
 	
 	public Page<ProgramDto> search(ProgramForm programForm){
-		Pageable pageable = PageRequest.of(programForm.getPage() - 1, programForm.getLimit(), 
-				Sort.by(Sort.Direction.ASC, "name"));
+		Sort sort = Sort.by(Sort.Direction.ASC, "name");
+		if(programForm.getSortBy() != null) {
+			sort = Sort.by(programForm.getSortDirectionObj(), programForm.getSortBy());
+		}
+		Pageable pageable = PageRequest.of(programForm.getPage() - 1, programForm.getLimit(), sort);
 		Page<Program> programPage = null;
 		try {
 			programPage = programRepository.search(programForm, pageable);

@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 
 import com.truyenhinh24h.controller.ScheduleForm;
 import com.truyenhinh24h.model.Schedule;
-import com.truyenhinh24h.model.ScheduleDto;
 
 public interface ScheduleRepositoryCustom {
 

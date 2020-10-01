@@ -1,7 +1,6 @@
 package com.truyenhinh24h.controller;
 
-import java.util.Set;
-
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,4 +31,8 @@ public class ProgramForm extends BaseForm {
 	private Long[] programIds;
 	
 	private String searchName;
+	
+	private Date startTime;
+	
+	private Date endTime;
 }
