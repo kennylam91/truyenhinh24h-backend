@@ -14,7 +14,7 @@ public class Category {
 	public static final String SEQUENCE_NAME = "category_sequence";
 	
 	@Id
-	private Long categoryId;
+	private Long id;
 	
 	private String name;
 

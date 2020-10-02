@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProgramForm extends BaseForm {
 
-	private Long programId;
+	private Long id;
 	
 	private String name;
 	

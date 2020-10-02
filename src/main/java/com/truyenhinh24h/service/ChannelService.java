@@ -26,8 +26,8 @@ public class ChannelService {
 	public ChannelDto createOrUpdate(ChannelDto channelDto) {
 		Channel channelEntity = mapper(channelDto);
 		Channel result = null;
-		if (channelEntity.getChannelId() == null) {
-			channelEntity.setChannelId(sequenceGeneratorService.generateSequence(Channel.SEQUENCE_NAME));
+		if (channelEntity.getId() == null) {
+			channelEntity.setId(sequenceGeneratorService.generateSequence(Channel.SEQUENCE_NAME));
 			result = channelRepository.insert(channelEntity);
 		} else {
 			result = channelRepository.save(channelEntity);
@@ -45,7 +45,7 @@ public class ChannelService {
 			return null;
 		}
 		Channel channelEntity = new Channel();
-		channelEntity.setChannelId(channel.getChannelId());
+		channelEntity.setId(channel.getId());
 		channelEntity.setName(channel.getName());
 		channelEntity.setDescription(channel.getDescription());
 		channelEntity.setLogoUrl(channel.getLogoUrl());
@@ -59,7 +59,7 @@ public class ChannelService {
 			return null;
 		}
 		ChannelDto channelDto = new ChannelDto();
-		channelDto.setChannelId(channel.getChannelId());
+		channelDto.setId(channel.getId());
 		channelDto.setName(channel.getName());
 		channelDto.setDescription(channel.getDescription());
 		channelDto.setLogoUrl(channel.getLogoUrl());

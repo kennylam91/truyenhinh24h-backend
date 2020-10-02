@@ -56,7 +56,7 @@ public class CategoryController {
 			return null;
 		}
 		CategoryDto categoryDto = new CategoryDto();
-		categoryDto.setCategoryId(category.getCategoryId());
+		categoryDto.setId(category.getId());
 		categoryDto.setName(category.getName());
 		return categoryDto;
 	}

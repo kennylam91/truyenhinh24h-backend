@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class ChannelForm extends BaseForm {
 
-	private Long channelId;
+	private Long id;
 
 	private String name;
 

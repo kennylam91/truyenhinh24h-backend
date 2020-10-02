@@ -39,8 +39,8 @@ public class ProgramService {
 	public ProgramDto createOrUpdate(ProgramDto programDto) { 
 		Program program = mapper(programDto);
 		Program result = null;
-		if(program.getProgramId() == null) {
-			program.setProgramId(sequenceGeneratorService.generateSequence(Program.SEQUENCE_NAME));
+		if(program.getId() == null) {
+			program.setId(sequenceGeneratorService.generateSequence(Program.SEQUENCE_NAME));
 			result = programRepository.insert(program);
 		} else {
 			result = programRepository.save(program);
@@ -110,7 +110,7 @@ public class ProgramService {
 		program.setLogoUrl(programDto.getLogoUrl());
 		program.setName(programDto.getName());
 		program.setEnName(programDto.getEnName());
-		program.setProgramId(programDto.getProgramId());
+		program.setId(programDto.getId());
 		program.setRate(programDto.getRate());
 		program.setYear(programDto.getYear());
 		return program;
@@ -126,7 +126,7 @@ public class ProgramService {
 		programDto.setLogoUrl(program.getLogoUrl());
 		programDto.setName(program.getName());
 		programDto.setEnName(program.getEnName());
-		programDto.setProgramId(program.getProgramId());
+		programDto.setId(program.getId());
 		programDto.setRate(program.getRate());
 		programDto.setYear(program.getYear());
 		

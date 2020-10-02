@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CategoryForm extends BaseForm {
 
-	private Long categoryId;
+	private Long id;
 
 	private String name;
 }

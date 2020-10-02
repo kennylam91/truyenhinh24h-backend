@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ProgramDto {
 
-	private Long programId;
+	private Long id;
 	
 	private String name;
 	

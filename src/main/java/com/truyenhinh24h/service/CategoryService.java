@@ -23,8 +23,8 @@ public class CategoryService {
 	public CategoryDto createOrUpdate(CategoryDto categoryDto) {
 		Category category = mapper(categoryDto);
 		Category result = null;
-		if(category.getCategoryId() == null) {
-			category.setCategoryId(sequenceGeneratorService.generateSequence(Category.SEQUENCE_NAME));
+		if(category.getId() == null) {
+			category.setId(sequenceGeneratorService.generateSequence(Category.SEQUENCE_NAME));
 			result = categoryRepository.insert(category);
 		} else {
 			result = categoryRepository.save(category);
@@ -45,7 +45,7 @@ public class CategoryService {
 			return null;
 		}
 		Category category = new Category();
-		category.setCategoryId(categoryDto.getCategoryId());
+		category.setId(categoryDto.getId());
 		category.setName(categoryDto.getName());
 		return category;
 	}
@@ -55,7 +55,7 @@ public class CategoryService {
 			return null;
 		}
 		CategoryDto categoryDto = new CategoryDto();
-		categoryDto.setCategoryId(category.getCategoryId());
+		categoryDto.setId(category.getId());
 		categoryDto.setName(category.getName());
 		return categoryDto;
 	}

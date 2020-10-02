@@ -85,7 +85,7 @@ public class ChannelController {
 			return null;
 		}
 		ChannelDto channelDto = new ChannelDto();
-		channelDto.setChannelId(channel.getChannelId());
+		channelDto.setId(channel.getId());
 		channelDto.setName(channel.getName());
 		channelDto.setDescription(channel.getDescription());
 		channelDto.setLogoUrl(channel.getLogoUrl());

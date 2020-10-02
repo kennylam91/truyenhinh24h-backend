@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class ChannelDto {
 
-	private Long channelId;
+	private Long id;
 
 	private String name;
 

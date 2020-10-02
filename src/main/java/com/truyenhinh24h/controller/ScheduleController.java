@@ -60,7 +60,7 @@ public class ScheduleController {
 		schedule.setEndTime(data.getEndTime());
 		schedule.setProgramId(data.getProgramId());
 		schedule.setProgramName(data.getProgramName());
-		schedule.setScheduleId(data.getScheduleId());
+		schedule.setId(data.getId());
 		schedule.setStartTime(data.getStartTime());
 		return schedule;
 

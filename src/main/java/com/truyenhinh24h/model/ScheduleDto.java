@@ -7,18 +7,18 @@ import lombok.Data;
 @Data
 public class ScheduleDto {
 
-private Long scheduleId;
-	
+	private Long id;
+
 	private Long channelId;
-	
+
 	private Long programId;
-	
+
 	private Date startTime;
-	
+
 	private Date endTime;
-	
+
 	private String programName;
-	
-	private String channelName; 
+
+	private String channelName;
 
 }
