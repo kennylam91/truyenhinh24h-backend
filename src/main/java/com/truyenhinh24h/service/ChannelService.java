@@ -1,5 +1,6 @@
 package com.truyenhinh24h.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class ChannelService {
 	}
 	
 	public void deleteMulti(Long[] ids) {
-		channelRepository.deleteByChannelIdIn(ids);
+		channelRepository.deleteByIdIn(ids);
 	}
 	
 	Channel mapper(ChannelDto channel) {
@@ -70,15 +71,14 @@ public class ChannelService {
 
 	public Page<ChannelDto> getAll(Pageable pageable) {
 		Page<Channel> channelPage = channelRepository.findAll(pageable);
-		List<ChannelDto> channelDtoList = null;
+		List<ChannelDto> channelDtoList = Collections.emptyList();
 		if(channelPage.hasContent()) {
 			channelDtoList = channelPage.getContent().stream()
 					.map(this::mapper)
 					.collect(Collectors.toList());
 		}
-		Page<ChannelDto> channelDtoPage = new PageImpl<ChannelDto>(channelDtoList, pageable, 
+		return new PageImpl<>(channelDtoList, pageable, 
 				channelPage.getTotalElements());
-		return channelDtoPage;
 	}
 
 	public ChannelDto findById(Long channelId) {

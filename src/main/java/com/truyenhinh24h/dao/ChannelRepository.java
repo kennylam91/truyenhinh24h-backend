@@ -7,6 +7,6 @@ import com.truyenhinh24h.model.Channel;
 
 public interface ChannelRepository extends MongoRepository<Channel, Long> {
 	
-	void deleteByChannelIdIn(Long[] ids);
+	void deleteByIdIn(Long[] ids);
 
 }

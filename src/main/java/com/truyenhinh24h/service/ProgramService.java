@@ -49,14 +49,14 @@ public class ProgramService {
 	}
 	
 	public void deleteMulti(Long[] ids) {
-		programRepository.deleteByProgramIdIn(ids);
+		programRepository.deleteByIdIn(ids);
 	}
 	
 	public ProgramDto findById(Long id) {
 		Optional<Program> optional = programRepository.findById(id);
 		if (optional.isPresent()) {
 			ProgramDto programDto = mapper(optional.get());
-			programDto.setCategories(categoryRepository.findByCategoryIdIn(programDto.getCategoryIds()));
+			programDto.setCategories(categoryRepository.findByIdIn(programDto.getCategoryIds()));
 			return programDto;
 		} else {
 			return null;
@@ -65,18 +65,17 @@ public class ProgramService {
 	
 	public Page<ProgramDto> getAll(Pageable pageable) {
 		Page<Program> programPage = programRepository.findAll(pageable);
-		List<ProgramDto> programDtoList = null;
+		List<ProgramDto> programDtoList = Collections.emptyList();
 		if (programPage.hasContent()) {
 			programDtoList = programPage.getContent().stream().map(this::mapper).collect(Collectors.toList());
 			for (ProgramDto programDto : programDtoList) {
 				if(programDto.getCategoryIds() != null && programDto.getCategoryIds().length > 0) {
-					programDto.setCategories(categoryRepository.findByCategoryIdIn(programDto.getCategoryIds()));
+					programDto.setCategories(categoryRepository.findByIdIn(programDto.getCategoryIds()));
 				}
 			}
 		}
-		Page<ProgramDto> programDtoPage = new PageImpl<ProgramDto>(programDtoList, pageable,
+		return new PageImpl<>(programDtoList, pageable,
 				programPage.getTotalElements());
-		return programDtoPage;
 	}
 	
 	public Page<ProgramDto> search(ProgramForm programForm){
