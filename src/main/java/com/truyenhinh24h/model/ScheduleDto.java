@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class ScheduleDto {
 
-private Long scheduleId;
+private Long id;
 	
 	private Long channelId;
 	

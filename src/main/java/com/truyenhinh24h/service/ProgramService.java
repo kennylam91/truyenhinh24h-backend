@@ -36,11 +36,10 @@ public class ProgramService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 	
-	public ProgramDto createOrUpdate(ProgramDto programDto) { 
-		Program program = mapper(programDto);
+	public ProgramDto createOrUpdate(Program program) { 
 		Program result = null;
-		if(program.getProgramId() == null) {
-			program.setProgramId(sequenceGeneratorService.generateSequence(Program.SEQUENCE_NAME));
+		if(program.getId() == null) {
+			program.setId(sequenceGeneratorService.generateSequence(Program.SEQUENCE_NAME));
 			result = programRepository.insert(program);
 		} else {
 			result = programRepository.save(program);
@@ -49,14 +48,14 @@ public class ProgramService {
 	}
 	
 	public void deleteMulti(Long[] ids) {
-		programRepository.deleteByProgramIdIn(ids);
+		programRepository.deleteByIdIn(ids);
 	}
 	
 	public ProgramDto findById(Long id) {
 		Optional<Program> optional = programRepository.findById(id);
 		if (optional.isPresent()) {
 			ProgramDto programDto = mapper(optional.get());
-			programDto.setCategories(categoryRepository.findByCategoryIdIn(programDto.getCategoryIds()));
+			programDto.setCategories(categoryRepository.findByIdIn(programDto.getCategoryIds()));
 			return programDto;
 		} else {
 			return null;
@@ -70,7 +69,7 @@ public class ProgramService {
 			programDtoList = programPage.getContent().stream().map(this::mapper).collect(Collectors.toList());
 			for (ProgramDto programDto : programDtoList) {
 				if(programDto.getCategoryIds() != null && programDto.getCategoryIds().length > 0) {
-					programDto.setCategories(categoryRepository.findByCategoryIdIn(programDto.getCategoryIds()));
+					programDto.setCategories(categoryRepository.findByIdIn(programDto.getCategoryIds()));
 				}
 			}
 		}
@@ -110,7 +109,7 @@ public class ProgramService {
 		program.setLogoUrl(programDto.getLogoUrl());
 		program.setName(programDto.getName());
 		program.setEnName(programDto.getEnName());
-		program.setProgramId(programDto.getProgramId());
+		program.setId(programDto.getId());
 		program.setRate(programDto.getRate());
 		program.setYear(programDto.getYear());
 		return program;
@@ -126,7 +125,7 @@ public class ProgramService {
 		programDto.setLogoUrl(program.getLogoUrl());
 		programDto.setName(program.getName());
 		programDto.setEnName(program.getEnName());
-		programDto.setProgramId(program.getProgramId());
+		programDto.setId(program.getId());
 		programDto.setRate(program.getRate());
 		programDto.setYear(program.getYear());
 		

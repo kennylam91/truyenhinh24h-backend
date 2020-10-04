@@ -1,5 +1,7 @@
 package com.truyenhinh24h.controller;
 
+import javax.validation.Valid;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truyenhinh24h.model.Channel;
 import com.truyenhinh24h.model.ChannelDto;
 import com.truyenhinh24h.service.ChannelService;
 
@@ -29,13 +32,13 @@ public class ChannelController {
 	private ChannelService channelService;
 
 	@PostMapping
-	public ResponseEntity<ChannelDto> createOrUpdate(@RequestBody ChannelForm channelForm) {
+	public ResponseEntity<ChannelDto> createOrUpdate(@Valid @RequestBody ChannelForm channelForm) {
 		logger.info("Create channel");
-		ChannelDto channelDto = mapper(channelForm);
+		Channel channel = mapper(channelForm);
 		try {
-			ChannelDto channel = channelService.createOrUpdate(channelDto);
-			logger.info("Channel created: {}", channel);
-			return ResponseEntity.ok(channel);
+			ChannelDto channelDto = channelService.createOrUpdate(channel);
+			logger.info("Channel created: {}", channelDto);
+			return ResponseEntity.ok(channelDto);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -78,17 +81,17 @@ public class ChannelController {
 		}
 	}
 
-	private ChannelDto mapper(ChannelForm channel) {
-		if (channel == null) {
+	private Channel mapper(ChannelForm data) {
+		if (data == null) {
 			return null;
 		}
-		ChannelDto channelDto = new ChannelDto();
-		channelDto.setChannelId(channel.getChannelId());
-		channelDto.setName(channel.getName());
-		channelDto.setDescription(channel.getDescription());
-		channelDto.setLogoUrl(channel.getLogoUrl());
-		channelDto.setNetworkId(channel.getNetworkId());
-		channelDto.setVip(channel.isVip());
-		return channelDto;
+		Channel channel = new Channel();
+		channel.setId(data.getId());
+		channel.setName(data.getName());
+		channel.setDescription(data.getDescription());
+		channel.setLogoUrl(data.getLogoUrl());
+		channel.setNetworkId(data.getNetworkId());
+		channel.setVip(data.isVip());
+		return channel;
 	}
 }

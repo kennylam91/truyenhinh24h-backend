@@ -2,6 +2,8 @@ package com.truyenhinh24h.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truyenhinh24h.model.Category;
 import com.truyenhinh24h.model.CategoryDto;
 import com.truyenhinh24h.service.CategoryService;
 
@@ -25,11 +28,11 @@ public class CategoryController {
 	private CategoryService categoryService;
 	
 	@PostMapping
-	public ResponseEntity<CategoryDto> createOrUpdate(@RequestBody CategoryForm categoryForm){
+	public ResponseEntity<CategoryDto> createOrUpdate(@RequestBody @Valid CategoryForm categoryForm){
 		logger.info("Create category");
-		CategoryDto categoryDto = mapper(categoryForm);
+		Category category = mapper(categoryForm);
 		try {
-			CategoryDto result = categoryService.createOrUpdate(categoryDto);
+			CategoryDto result = categoryService.createOrUpdate(category);
 			logger.info("Category created: {}", result);
 			return ResponseEntity.ok(result);
 		} catch (Exception e) {
@@ -49,13 +52,13 @@ public class CategoryController {
 		}
 	}
 	
-	private CategoryDto mapper(CategoryForm category) {
-		if(category == null) {
+	private Category mapper(CategoryForm data) {
+		if(data == null) {
 			return null;
 		}
-		CategoryDto categoryDto = new CategoryDto();
-		categoryDto.setCategoryId(category.getCategoryId());
-		categoryDto.setName(category.getName());
-		return categoryDto;
+		Category category = new Category();
+		category.setId(data.getId());
+		category.setName(data.getName());
+		return category;
 	}
 }

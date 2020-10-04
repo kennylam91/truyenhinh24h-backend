@@ -31,11 +31,10 @@ public class ScheduleService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 	
-	public ScheduleDto createOrUpdate(ScheduleDto scheduleDto) {
-		Schedule schedule = mapper(scheduleDto);
+	public ScheduleDto createOrUpdate(Schedule schedule) {
 		Schedule result = null;
-		if(schedule.getScheduleId() == null) {
-			schedule.setScheduleId(sequenceGeneratorService.generateSequence(Schedule.SEQUENCE_NAME));
+		if(schedule.getId() == null) {
+			schedule.setId(sequenceGeneratorService.generateSequence(Schedule.SEQUENCE_NAME));
 			result = scheduleRepository.insert(schedule);
 		} else {
 			result = scheduleRepository.save(schedule);
@@ -71,7 +70,7 @@ public class ScheduleService {
 		schedule.setEndTime(data.getEndTime());
 		schedule.setProgramId(data.getProgramId());
 		schedule.setProgramName(data.getProgramName());
-		schedule.setScheduleId(data.getScheduleId());
+		schedule.setId(data.getId());
 		schedule.setStartTime(data.getStartTime());
 		return schedule;
 	}
@@ -86,7 +85,7 @@ public class ScheduleService {
 		schedule.setEndTime(data.getEndTime());
 		schedule.setProgramId(data.getProgramId());
 		schedule.setProgramName(data.getProgramName());
-		schedule.setScheduleId(data.getScheduleId());
+		schedule.setId(data.getId());
 		schedule.setStartTime(data.getStartTime());
 		return schedule;
 	}

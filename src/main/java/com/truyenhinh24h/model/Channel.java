@@ -14,7 +14,7 @@ public class Channel {
 	public static final String SEQUENCE_NAME = "channel_sequence";
 
 	@Id
-	private Long channelId;
+	private Long id;
 
 	private String name;
 

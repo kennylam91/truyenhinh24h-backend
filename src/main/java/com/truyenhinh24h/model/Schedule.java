@@ -16,7 +16,7 @@ public class Schedule {
 	public static final String SEQUENCE_NAME = "schedule_sequence";
 	
 	@Id
-	private Long scheduleId;
+	private Long id;
 	
 	private Long channelId;
 	

@@ -14,7 +14,7 @@ public class Program {
 	public static final String SEQUENCE_NAME = "program_sequence";
 	
 	@Id
-	private Long programId;
+	private Long id;
 	
 	private String name;
 	

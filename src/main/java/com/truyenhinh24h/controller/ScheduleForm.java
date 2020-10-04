@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ScheduleForm extends BaseForm {
 	
-	private Long scheduleId;
+	private Long id;
 
 	@NotNull(message = "ChannelId must not be null")
 	private Long channelId;
