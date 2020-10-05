@@ -60,6 +60,15 @@ public class ScheduleService {
 		}
 	}
 	
+	public void importMulti(List<Schedule> schedules) {
+		for (Schedule schedule : schedules) {
+			if(schedule.getId() == null) {
+				schedule.setId(sequenceGeneratorService.generateSequence(Schedule.SEQUENCE_NAME));
+			}
+		}
+		scheduleRepository.saveAll(schedules);
+	}
+	
 	Schedule mapper(ScheduleDto data) {
 		if(data == null) {
 			return null;

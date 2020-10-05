@@ -1,5 +1,8 @@
 package com.truyenhinh24h.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
@@ -36,6 +39,17 @@ public class ScheduleController {
 			return ResponseEntity.ok(result);
 		} catch (Exception e) {
 			logger.error(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
+	@PostMapping("/import")
+	public ResponseEntity<Void> importMulti(@Valid @RequestBody List<ScheduleForm> forms){
+		try {
+			List<Schedule> schedules = forms.stream().map(this::mapper).collect(Collectors.toList());
+			scheduleService.importMulti(schedules);
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
