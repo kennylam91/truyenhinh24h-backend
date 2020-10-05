@@ -19,9 +19,11 @@ public class ProgramDto {
 	
 	private String logoUrl;
 	
-	private long rank;
+	private Long rank;
 	
 	private long year;
 	
 	private Set<Category> categories;
+	
+	private String trailerUrl;
 }

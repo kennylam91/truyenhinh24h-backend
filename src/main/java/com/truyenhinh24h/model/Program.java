@@ -26,9 +26,11 @@ public class Program {
 	
 	private String logoUrl;
 	
-	private long rank = 1;
+	private Long rank;
 	
 	private long year;
+	
+	private String trailerUrl;
 	
 	
 	

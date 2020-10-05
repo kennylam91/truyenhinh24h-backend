@@ -90,10 +90,15 @@ public class ProgramService {
 			logger.error(e.getMessage());
 		}
 		if (programPage == null || !programPage.hasContent()) {
-			return new PageImpl<>(Collections.emptyList(), pageable, 0);
+			return new PageImpl<>(Collections.emptyList());
 		} else {
 			List<Program> programList = programPage.getContent();
-			List<ProgramDto> scheduleDtoList = programList.stream().map(this::mapper).collect(Collectors.toList());
+			List<ProgramDto> scheduleDtoList = programList.stream()
+					.map(this::mapper).collect(Collectors.toList())
+					;
+			for (ProgramDto programDto : scheduleDtoList) {
+				programDto.setCategories(categoryRepository.findByIdIn(programDto.getCategoryIds()));
+			}
 			return new PageImpl<>(scheduleDtoList, pageable, programPage.getTotalElements());
 		}
 	}
@@ -111,6 +116,7 @@ public class ProgramService {
 		program.setId(programDto.getId());
 		program.setRank(programDto.getRank());
 		program.setYear(programDto.getYear());
+		program.setTrailerUrl(programDto.getTrailerUrl());
 		return program;
 	}
 	
@@ -127,6 +133,7 @@ public class ProgramService {
 		programDto.setId(program.getId());
 		programDto.setRank(program.getRank());
 		programDto.setYear(program.getYear());
+		programDto.setTrailerUrl(program.getTrailerUrl());
 		
 		return programDto;
 		

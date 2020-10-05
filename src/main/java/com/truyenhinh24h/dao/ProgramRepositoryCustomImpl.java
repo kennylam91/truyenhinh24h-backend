@@ -45,6 +45,9 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 					.elemMatch(new Criteria().in(Arrays.asList(programForm.getCategoryIds())));
 			query.addCriteria(categoryCriteria);
 		}
+		if(programForm.getRank() != null) {
+			query.addCriteria(where("rank").is(programForm.getRank()));
+		}
 		if (programForm.getStartTime() != null && programForm.getEndTime() != null) {
 			Query scheduleQuery = new Query();
 			scheduleQuery.addCriteria(where("startTime").gte(programForm.getStartTime()))

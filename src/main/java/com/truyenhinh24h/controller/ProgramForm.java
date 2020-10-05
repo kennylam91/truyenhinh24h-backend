@@ -28,7 +28,7 @@ public class ProgramForm extends BaseForm {
 	
 	private String logoUrl;
 	
-	private long rank;
+	private Long rank;
 	
 	private long year;
 	
@@ -39,4 +39,6 @@ public class ProgramForm extends BaseForm {
 	private Date startTime;
 	
 	private Date endTime;
+	
+	private String trailerUrl;
 }
