@@ -31,8 +31,7 @@ public class ScheduleService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 	
-	public ScheduleDto createOrUpdate(ScheduleDto scheduleDto) {
-		Schedule schedule = mapper(scheduleDto);
+	public ScheduleDto createOrUpdate(Schedule schedule) {
 		Schedule result = null;
 		if(schedule.getId() == null) {
 			schedule.setId(sequenceGeneratorService.generateSequence(Schedule.SEQUENCE_NAME));

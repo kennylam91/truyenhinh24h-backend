@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.model.ScheduleDto;
 import com.truyenhinh24h.service.ScheduleService;
 
@@ -28,9 +29,9 @@ public class ScheduleController {
 	@PostMapping
 	public ResponseEntity<ScheduleDto> createOrUpdate(@Valid @RequestBody ScheduleForm scheduleForm) {
 		logger.info("Create Schedule");
-		ScheduleDto scheduleDto = mapper(scheduleForm);
+		Schedule schedule = mapper(scheduleForm);
 		try {
-			ScheduleDto result = scheduleService.createOrUpdate(scheduleDto);
+			ScheduleDto result = scheduleService.createOrUpdate(schedule);
 			logger.info("Schedule created: {}", result);
 			return ResponseEntity.ok(result);
 		} catch (Exception e) {
@@ -50,11 +51,11 @@ public class ScheduleController {
 		}
 	}
 
-	private ScheduleDto mapper(ScheduleForm data) {
+	private Schedule mapper(ScheduleForm data) {
 		if (data == null) {
 			return null;
 		}
-		ScheduleDto schedule = new ScheduleDto();
+		Schedule schedule = new Schedule();
 		schedule.setChannelId(data.getChannelId());
 		schedule.setChannelName(data.getChannelName());
 		schedule.setEndTime(data.getEndTime());

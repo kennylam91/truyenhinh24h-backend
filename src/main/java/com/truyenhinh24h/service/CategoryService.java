@@ -20,8 +20,7 @@ public class CategoryService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 	
-	public CategoryDto createOrUpdate(CategoryDto categoryDto) {
-		Category category = mapper(categoryDto);
+	public CategoryDto createOrUpdate(Category category) {
 		Category result = null;
 		if(category.getId() == null) {
 			category.setId(sequenceGeneratorService.generateSequence(Category.SEQUENCE_NAME));

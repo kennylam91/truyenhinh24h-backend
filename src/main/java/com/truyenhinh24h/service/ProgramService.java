@@ -36,8 +36,7 @@ public class ProgramService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 	
-	public ProgramDto createOrUpdate(ProgramDto programDto) { 
-		Program program = mapper(programDto);
+	public ProgramDto createOrUpdate(Program program) { 
 		Program result = null;
 		if(program.getId() == null) {
 			program.setId(sequenceGeneratorService.generateSequence(Program.SEQUENCE_NAME));

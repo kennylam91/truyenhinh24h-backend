@@ -1,5 +1,6 @@
 package com.truyenhinh24h.service;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,14 +25,13 @@ public class ChannelService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 
-	public ChannelDto createOrUpdate(ChannelDto channelDto) {
-		Channel channelEntity = mapper(channelDto);
+	public ChannelDto createOrUpdate(Channel channel) {
 		Channel result = null;
-		if (channelEntity.getId() == null) {
-			channelEntity.setId(sequenceGeneratorService.generateSequence(Channel.SEQUENCE_NAME));
-			result = channelRepository.insert(channelEntity);
+		if (channel.getId() == null) {
+			channel.setId(sequenceGeneratorService.generateSequence(Channel.SEQUENCE_NAME));
+			result = channelRepository.insert(channel);
 		} else {
-			result = channelRepository.save(channelEntity);
+			result = channelRepository.save(channel);
 		}
 		return mapper(result);
 
@@ -71,14 +71,17 @@ public class ChannelService {
 
 	public Page<ChannelDto> getAll(Pageable pageable) {
 		Page<Channel> channelPage = channelRepository.findAll(pageable);
-		List<ChannelDto> channelDtoList = Collections.emptyList();
+		List<ChannelDto> channelDtoList = null;
+		
 		if(channelPage.hasContent()) {
-			channelDtoList = channelPage.getContent().stream()
-					.map(this::mapper)
+			channelDtoList = channelPage.getContent().stream().map(this::mapper)
 					.collect(Collectors.toList());
+			return new PageImpl<ChannelDto>(channelDtoList, pageable, 
+					channelPage.getTotalElements());
+		}else {
+			return new PageImpl<>(Collections.emptyList());
 		}
-		return new PageImpl<>(channelDtoList, pageable, 
-				channelPage.getTotalElements());
+		
 	}
 
 	public ChannelDto findById(Long channelId) {

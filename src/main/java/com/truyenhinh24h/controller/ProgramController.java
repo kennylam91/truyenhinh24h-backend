@@ -2,6 +2,8 @@ package com.truyenhinh24h.controller;
 
 import java.util.Arrays;
 
+import javax.validation.Valid;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
 import com.truyenhinh24h.service.ProgramService;
 
@@ -33,11 +36,11 @@ public class ProgramController {
 	private ProgramService programService;
 	
 	@PostMapping
-	public ResponseEntity<ProgramDto> createOrUpdate(@RequestBody ProgramForm programForm){
+	public ResponseEntity<ProgramDto> createOrUpdate(@RequestBody @Valid ProgramForm programForm){
 		logger.info("Create program");
-		ProgramDto programDto = mapper(programForm);
+		Program program = mapper(programForm);
 		try {
-			ProgramDto result = programService.createOrUpdate(programDto);
+			ProgramDto result = programService.createOrUpdate(program);
 			logger.info("Program created: {}", result);
 			return ResponseEntity.ok(result);
 		} catch (Exception e) {
@@ -93,21 +96,21 @@ public class ProgramController {
 		}
 	}
 	
-	private ProgramDto mapper(ProgramForm program) {
-		if(program == null) {
+	private Program mapper(ProgramForm data) {
+		if(data == null) {
 			return null;
 		}
-		ProgramDto programDto = new ProgramDto();
-		programDto.setCategoryIds(program.getCategoryIds());
-		programDto.setDescription(program.getDescription());
-		programDto.setLogoUrl(program.getLogoUrl());
-		programDto.setName(program.getName());
-		programDto.setEnName(program.getEnName());
-		programDto.setId(program.getId());
-		programDto.setRate(program.getRate());
-		programDto.setYear(program.getYear());
+		Program program = new Program();
+		program.setCategoryIds(data.getCategoryIds());
+		program.setDescription(data.getDescription());
+		program.setLogoUrl(data.getLogoUrl());
+		program.setName(data.getName());
+		program.setEnName(data.getEnName());
+		program.setId(data.getId());
+		program.setRate(data.getRate());
+		program.setYear(data.getYear());
 		
-		return programDto;
+		return program;
 	}
 
 }

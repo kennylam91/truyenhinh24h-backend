@@ -1,6 +1,9 @@
 package com.truyenhinh24h.controller;
 
 import java.util.Date;
+
+import javax.validation.constraints.NotEmpty;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +17,7 @@ public class ProgramForm extends BaseForm {
 
 	private Long id;
 	
+	@NotEmpty(message = "Name must not be empty")
 	private String name;
 	
 	private String enName;
