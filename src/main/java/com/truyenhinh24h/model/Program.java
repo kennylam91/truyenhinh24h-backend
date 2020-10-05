@@ -26,7 +26,7 @@ public class Program {
 	
 	private String logoUrl;
 	
-	private float rate;
+	private long rank = 1;
 	
 	private long year;
 	

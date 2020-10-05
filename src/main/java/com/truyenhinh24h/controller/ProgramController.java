@@ -107,7 +107,7 @@ public class ProgramController {
 		program.setName(data.getName());
 		program.setEnName(data.getEnName());
 		program.setId(data.getId());
-		program.setRate(data.getRate());
+		program.setRank(data.getRank());
 		program.setYear(data.getYear());
 		
 		return program;

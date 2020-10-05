@@ -109,7 +109,7 @@ public class ProgramService {
 		program.setName(programDto.getName());
 		program.setEnName(programDto.getEnName());
 		program.setId(programDto.getId());
-		program.setRate(programDto.getRate());
+		program.setRank(programDto.getRank());
 		program.setYear(programDto.getYear());
 		return program;
 	}
@@ -125,7 +125,7 @@ public class ProgramService {
 		programDto.setName(program.getName());
 		programDto.setEnName(program.getEnName());
 		programDto.setId(program.getId());
-		programDto.setRate(program.getRate());
+		programDto.setRank(program.getRank());
 		programDto.setYear(program.getYear());
 		
 		return programDto;

@@ -19,7 +19,7 @@ public class ProgramDto {
 	
 	private String logoUrl;
 	
-	private float rate;
+	private long rank;
 	
 	private long year;
 	

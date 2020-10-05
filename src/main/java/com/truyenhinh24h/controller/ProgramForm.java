@@ -28,7 +28,7 @@ public class ProgramForm extends BaseForm {
 	
 	private String logoUrl;
 	
-	private float rate;
+	private long rank;
 	
 	private long year;
 	
