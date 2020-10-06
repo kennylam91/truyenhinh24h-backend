@@ -91,7 +91,7 @@ public class ChannelController {
 		channel.setId(data.getId());
 		channel.setName(data.getName());
 		channel.setDescription(data.getDescription());
-		channel.setLogoUrl(data.getLogoUrl());
+		channel.setLogo(data.getLogo());
 		channel.setNetworkId(data.getNetworkId());
 		channel.setVip(data.isVip());
 		return channel;

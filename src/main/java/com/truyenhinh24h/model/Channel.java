@@ -20,7 +20,7 @@ public class Channel {
 
 	private String description;
 
-	private String logoUrl;
+	private String logo;
 
 	private boolean vip;
 

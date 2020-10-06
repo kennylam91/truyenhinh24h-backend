@@ -49,7 +49,7 @@ public class ChannelService {
 		channelEntity.setId(channel.getId());
 		channelEntity.setName(channel.getName());
 		channelEntity.setDescription(channel.getDescription());
-		channelEntity.setLogoUrl(channel.getLogoUrl());
+		channelEntity.setLogo(channel.getLogo());
 		channelEntity.setNetworkId(channel.getNetworkId());
 		channelEntity.setVip(channel.isVip());
 		return channelEntity;
@@ -63,7 +63,7 @@ public class ChannelService {
 		channelDto.setId(channel.getId());
 		channelDto.setName(channel.getName());
 		channelDto.setDescription(channel.getDescription());
-		channelDto.setLogoUrl(channel.getLogoUrl());
+		channelDto.setLogo(channel.getLogo());
 		channelDto.setNetworkId(channel.getNetworkId());
 		channelDto.setVip(channel.isVip());
 		return channelDto;

@@ -14,7 +14,7 @@ public class ChannelDto {
 
 	Set<String> categories;
 
-	private String logoUrl;
+	private String logo;
 
 	private boolean vip;
 

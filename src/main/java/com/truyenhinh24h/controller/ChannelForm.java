@@ -19,7 +19,7 @@ public class ChannelForm extends BaseForm {
 
 	private String description;
 
-	private String logoUrl;
+	private String logo;
 
 	private boolean vip = false;
 
