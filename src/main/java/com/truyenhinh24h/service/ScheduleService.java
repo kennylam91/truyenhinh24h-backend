@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.truyenhinh24h.controller.ScheduleForm;
 import com.truyenhinh24h.dao.ScheduleRepository;
@@ -60,13 +61,14 @@ public class ScheduleService {
 		}
 	}
 	
+	@Transactional
 	public void importMulti(List<Schedule> schedules) {
 		for (Schedule schedule : schedules) {
 			if(schedule.getId() == null) {
 				schedule.setId(sequenceGeneratorService.generateSequence(Schedule.SEQUENCE_NAME));
 			}
+			scheduleRepository.save(schedule);
 		}
-		scheduleRepository.saveAll(schedules);
 	}
 	
 	Schedule mapper(ScheduleDto data) {

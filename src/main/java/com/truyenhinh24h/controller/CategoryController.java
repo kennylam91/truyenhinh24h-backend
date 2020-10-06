@@ -61,6 +61,7 @@ public class CategoryController {
 		Category category = new Category();
 		category.setId(data.getId());
 		category.setName(data.getName());
+		category.setCode(data.getCode());
 		return category;
 	}
 }

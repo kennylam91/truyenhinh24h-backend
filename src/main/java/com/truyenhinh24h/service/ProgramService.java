@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.truyenhinh24h.controller.ProgramForm;
 import com.truyenhinh24h.dao.CategoryRepository;
@@ -55,7 +56,7 @@ public class ProgramService {
 		Optional<Program> optional = programRepository.findById(id);
 		if (optional.isPresent()) {
 			ProgramDto programDto = mapper(optional.get());
-			programDto.setCategories(categoryRepository.findByIdIn(programDto.getCategoryIds()));
+			programDto.setCategories(categoryRepository.findByCodeIn(programDto.getCategoryCodes()));
 			return programDto;
 		} else {
 			return null;
@@ -68,8 +69,8 @@ public class ProgramService {
 		if (programPage.hasContent()) {
 			programDtoList = programPage.getContent().stream().map(this::mapper).collect(Collectors.toList());
 			for (ProgramDto programDto : programDtoList) {
-				if(programDto.getCategoryIds() != null && programDto.getCategoryIds().length > 0) {
-					programDto.setCategories(categoryRepository.findByIdIn(programDto.getCategoryIds()));
+				if(programDto.getCategoryCodes() != null && programDto.getCategoryCodes().length > 0) {
+					programDto.setCategories(categoryRepository.findByCodeIn(programDto.getCategoryCodes()));
 				}
 			}
 		}
@@ -97,7 +98,7 @@ public class ProgramService {
 					.map(this::mapper).collect(Collectors.toList())
 					;
 			for (ProgramDto programDto : scheduleDtoList) {
-				programDto.setCategories(categoryRepository.findByIdIn(programDto.getCategoryIds()));
+				programDto.setCategories(categoryRepository.findByCodeIn(programDto.getCategoryCodes()));
 			}
 			return new PageImpl<>(scheduleDtoList, pageable, programPage.getTotalElements());
 		}
@@ -108,15 +109,15 @@ public class ProgramService {
 			return null;
 		}
 		Program program = new Program();
-		program.setCategoryIds(programDto.getCategoryIds());
+		program.setCategoryCodes(programDto.getCategoryCodes());
 		program.setDescription(programDto.getDescription());
-		program.setLogoUrl(programDto.getLogoUrl());
+		program.setLogo(programDto.getLogo());
 		program.setName(programDto.getName());
 		program.setEnName(programDto.getEnName());
 		program.setId(programDto.getId());
 		program.setRank(programDto.getRank());
 		program.setYear(programDto.getYear());
-		program.setTrailerUrl(programDto.getTrailerUrl());
+		program.setTrailer(programDto.getTrailer());
 		return program;
 	}
 	
@@ -125,17 +126,28 @@ public class ProgramService {
 			return null;
 		}
 		ProgramDto programDto = new ProgramDto();
-		programDto.setCategoryIds(program.getCategoryIds());
+		programDto.setCategoryCodes(program.getCategoryCodes());
 		programDto.setDescription(program.getDescription());
-		programDto.setLogoUrl(program.getLogoUrl());
+		programDto.setLogo(program.getLogo());
 		programDto.setName(program.getName());
 		programDto.setEnName(program.getEnName());
 		programDto.setId(program.getId());
 		programDto.setRank(program.getRank());
 		programDto.setYear(program.getYear());
-		programDto.setTrailerUrl(program.getTrailerUrl());
+		programDto.setTrailer(program.getTrailer());
 		
 		return programDto;
+		
+	}
+
+	@Transactional
+	public void importMulti(List<Program> programs) {
+		for (Program program : programs) {
+			if(program.getId() == null) {
+				program.setId(sequenceGeneratorService.generateSequence(Program.SEQUENCE_NAME));
+			}
+			programRepository.save(program);
+		}
 		
 	}
 }

@@ -24,9 +24,8 @@ public class ProgramForm extends BaseForm {
 	
 	private String description;
 	
-	private Long[] categoryIds;
-	
-	private String logoUrl;
+	// su dung khi import du lieu tu firestore vao
+	private Long[] categories;
 	
 	private Long rank;
 	
@@ -40,5 +39,9 @@ public class ProgramForm extends BaseForm {
 	
 	private Date endTime;
 	
-	private String trailerUrl;
+	private String trailer;
+	
+	private String logo;
+	
+	private Long[] categoryCodes;
 }

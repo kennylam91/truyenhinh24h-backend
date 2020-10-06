@@ -3,15 +3,20 @@ package com.truyenhinh24h;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
+import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
 @Configuration
-public class ApplicationConfiguration {
+public class ApplicationConfiguration extends AbstractMongoClientConfiguration {
 
 	/*
 	 * Use the standard Mongo driver API to create a com.mongodb.client.MongoClient
@@ -19,15 +24,20 @@ public class ApplicationConfiguration {
 	 */
 	@Value("${spring.data.mongodb.uri}")
 	private String mongoUrl;
-	
-	public @Bean MongoClient mongoClient() {
-		return MongoClients.create(mongoUrl);
-	}
+
+//	public @Bean MongoClient mongoClient() {
+//		return MongoClients.create(mongoUrl);
+//	}
 
 	public @Bean MongoTemplate mongoTemplate() {
 		return new MongoTemplate(mongoClient(), "truyenhinh24h");
 	}
-	
+
+	@Bean
+	MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
+		return new MongoTransactionManager(dbFactory);
+	}
+
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
@@ -37,4 +47,20 @@ public class ApplicationConfiguration {
 			}
 		};
 	}
+
+	@Override
+	protected String getDatabaseName() {
+		return "truyenhinh24h";
+	}
+
+	@Override
+	public MongoClient mongoClient() {
+		return MongoClients.create(mongoUrl);
+	}
+
+	@Override
+	protected boolean autoIndexCreation() {
+		return true;
+	}
+	
 }

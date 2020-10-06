@@ -46,6 +46,7 @@ public class CategoryService {
 		Category category = new Category();
 		category.setId(categoryDto.getId());
 		category.setName(categoryDto.getName());
+		category.setCode(categoryDto.getCode());
 		return category;
 	}
 	
@@ -56,6 +57,7 @@ public class CategoryService {
 		CategoryDto categoryDto = new CategoryDto();
 		categoryDto.setId(category.getId());
 		categoryDto.setName(category.getName());
+		categoryDto.setCode(category.getCode());
 		return categoryDto;
 	}
 }

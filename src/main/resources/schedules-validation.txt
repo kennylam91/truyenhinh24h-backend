@@ -1,0 +1,36 @@
+{
+  $jsonSchema: {
+    bsonType: 'object',
+    required: [
+      '_id',
+      'channelId',
+      'startTime',
+      'endTime',
+      'programName',
+      'channelName'
+    ],
+    properties: {
+      _id: {
+        bsonType: 'long'
+      },
+      channelId: {
+        bsonType: 'long'
+      },
+      programId: {
+        bsonType: 'long'
+      },
+      startTime: {
+        bsonType: 'date'
+      },
+      endTime: {
+        bsonType: 'date'
+      },
+      programName: {
+        bsonType: 'string'
+      },
+      channelName: {
+        bsonType: 'string'
+      }
+    }
+  }
+}

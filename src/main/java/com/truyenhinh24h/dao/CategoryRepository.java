@@ -11,4 +11,6 @@ import com.truyenhinh24h.model.Category;
 public interface CategoryRepository extends MongoRepository<Category, Long>{
 
 	Set<Category> findByIdIn(Long[] ids);
+	
+	Set<Category> findByCodeIn(Long[] ids);
 }

@@ -15,9 +15,10 @@ public class ProgramDto {
 	
 	private String description;
 	
-	private Long[] categoryIds;
+	// category codes
+	private Long[] categoryCodes;
 	
-	private String logoUrl;
+	private String logo;
 	
 	private Long rank;
 	
@@ -25,5 +26,5 @@ public class ProgramDto {
 	
 	private Set<Category> categories;
 	
-	private String trailerUrl;
+	private String trailer;
 }

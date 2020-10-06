@@ -1,6 +1,8 @@
 package com.truyenhinh24h.controller;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
+import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.service.ProgramService;
 
 @RestController
@@ -96,20 +99,37 @@ public class ProgramController {
 		}
 	}
 	
+	@PostMapping("/import")
+	public ResponseEntity<Void> importMulti(@Valid @RequestBody List<ProgramForm> forms){
+		try {
+			List<Program> programs = forms.stream().map(this::mapper).collect(Collectors.toList());
+			programService.importMulti(programs);
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			logger.error(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
 	private Program mapper(ProgramForm data) {
 		if(data == null) {
 			return null;
 		}
+		
+		if(data.getCategories() != null) {
+			data.setCategoryCodes(data.getCategories());
+		}
+		
 		Program program = new Program();
-		program.setCategoryIds(data.getCategoryIds());
+		program.setCategoryCodes(data.getCategoryCodes());
 		program.setDescription(data.getDescription());
-		program.setLogoUrl(data.getLogoUrl());
+		program.setLogo(data.getLogo());
 		program.setName(data.getName());
 		program.setEnName(data.getEnName());
 		program.setId(data.getId());
 		program.setRank(data.getRank() != null ? data.getRank() : 1L);
 		program.setYear(data.getYear());
-		program.setTrailerUrl(data.getTrailerUrl());
+		program.setTrailer(data.getTrailer());
 		
 		return program;
 	}

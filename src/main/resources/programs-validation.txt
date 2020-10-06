@@ -1,0 +1,38 @@
+{
+  $jsonSchema: {
+    bsonType: 'object',
+    required: [
+      '_id',
+      'name'
+    ],
+    properties: {
+      name: {
+        bsonType: 'string'
+      },
+      _id: {
+        bsonType: 'long'
+      },
+      enName: {
+        bsonType: 'string'
+      },
+      description: {
+        bsonType: 'string'
+      },
+      logo: {
+        bsonType: 'string'
+      },
+      categoryIds: {
+        bsonType: 'array'
+      },
+      rank: {
+        bsonType: 'long'
+      },
+      year: {
+        bsonType: 'long'
+      },
+      trailer: {
+        bsonType: 'string'
+      }
+    }
+  }
+}

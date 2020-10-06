@@ -50,6 +50,7 @@ public class ScheduleController {
 			scheduleService.importMulti(schedules);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
+			logger.error(e);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}

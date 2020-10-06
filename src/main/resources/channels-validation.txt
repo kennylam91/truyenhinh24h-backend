@@ -1,0 +1,30 @@
+{
+  $jsonSchema: {
+    bsonType: 'object',
+    required: [
+      '_id',
+      'name'
+    ],
+    properties: {
+      name: {
+        bsonType: 'string',
+        description: 'must be a string and is required'
+      },
+      _id: {
+        bsonType: 'long'
+      },
+      description: {
+        bsonType: 'string'
+      },
+      logoUrl: {
+        bsonType: 'string'
+      },
+      vip: {
+        bsonType: 'bool'
+      },
+      networkId: {
+        bsonType: 'long'
+      }
+    }
+  }
+}

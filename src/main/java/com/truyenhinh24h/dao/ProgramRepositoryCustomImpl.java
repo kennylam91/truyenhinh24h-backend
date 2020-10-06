@@ -40,9 +40,9 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 			Criteria enNameCriterial = where("enName").regex(programForm.getSearchName());
 			query.addCriteria(new Criteria().orOperator(nameCriteria, enNameCriterial));
 		}
-		if (programForm.getCategoryIds() != null) {
-			Criteria categoryCriteria = where("categoryIds")
-					.elemMatch(new Criteria().in(Arrays.asList(programForm.getCategoryIds())));
+		if (programForm.getCategoryCodes() != null) {
+			Criteria categoryCriteria = where("categoryCodes")
+					.elemMatch(new Criteria().in(Arrays.asList(programForm.getCategoryCodes())));
 			query.addCriteria(categoryCriteria);
 		}
 		if(programForm.getRank() != null) {
