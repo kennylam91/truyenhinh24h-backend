@@ -25,7 +25,7 @@ public class ProgramForm extends BaseForm {
 	private String description;
 	
 	// su dung khi import du lieu tu firestore vao
-	private Long[] categories;
+//	private Long[] categories;
 	
 	private Long rank;
 	

@@ -56,9 +56,9 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 			Set<Long> scheduleIds = schedules.stream().map(Schedule::getProgramId).collect(Collectors.toSet());
 			query.addCriteria(where("_id").in(scheduleIds));
 		}
+		long total = mongoTemplate.count(query, Program.class);
 		query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
 		List<Program> programs = mongoTemplate.find(query, Program.class);
-		long total = mongoTemplate.count(query, Program.class);
 		return new PageImpl<>(programs, pageable, total);
 	}
 

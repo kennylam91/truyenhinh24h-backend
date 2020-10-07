@@ -116,9 +116,9 @@ public class ProgramController {
 			return null;
 		}
 		
-		if(data.getCategories() != null) {
-			data.setCategoryCodes(data.getCategories());
-		}
+//		if(data.getCategories() != null) {
+//			data.setCategoryCodes(data.getCategories());
+//		}
 		
 		Program program = new Program();
 		program.setCategoryCodes(data.getCategoryCodes());
