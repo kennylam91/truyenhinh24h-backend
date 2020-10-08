@@ -94,6 +94,46 @@ public class ProgramController {
 		}
 	}
 	
+	@PostMapping(path = "/today")
+	public ResponseEntity<Page<ProgramDto>> getTodayPrograms(@RequestBody ProgramForm form, HttpServletRequest request){
+		try {
+			if(!form.isStartTimeFilterValid()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			}
+			AccessLog log = new AccessLog();
+			log.setCreatedAt(new Date());
+			log.setEndPoint("/programs/today");
+			log.setIp(Utils.getClientIpAddress(request));
+			log.setMethod(HttpMethod.POST);
+			accessLogService.createOrUpdate(log);
+			Page<ProgramDto> programDtoPage = programService.search(form);
+			return ResponseEntity.ok(programDtoPage);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
+	@PostMapping(path = "/tomorrow")
+	public ResponseEntity<Page<ProgramDto>> getTomorrowPrograms(@RequestBody ProgramForm form, HttpServletRequest request){
+		try {
+			if(!form.isStartTimeFilterValid()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			}
+			AccessLog log = new AccessLog();
+			log.setCreatedAt(new Date());
+			log.setEndPoint("/programs/tomorrow");
+			log.setIp(Utils.getClientIpAddress(request));
+			log.setMethod(HttpMethod.POST);
+			accessLogService.createOrUpdate(log);
+			Page<ProgramDto> programDtoPage = programService.search(form);
+			return ResponseEntity.ok(programDtoPage);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
 	@PostMapping(path = "/get-all")
 	public ResponseEntity<Page<ProgramDto>> getAll(@RequestBody ProgramForm programForm) {
 		try {
