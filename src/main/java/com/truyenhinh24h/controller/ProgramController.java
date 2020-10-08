@@ -1,9 +1,11 @@
 package com.truyenhinh24h.controller;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,10 +25,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truyenhinh24h.common.Utils;
+import com.truyenhinh24h.model.AccessLog;
+import com.truyenhinh24h.model.HttpMethod;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
 import com.truyenhinh24h.model.Schedule;
+import com.truyenhinh24h.service.AccessLogService;
 import com.truyenhinh24h.service.ProgramService;
+import com.truyenhinh24h.service.ScheduleService;
 
 @RestController
 @RequestMapping(path = "/rest/v1/programs")
@@ -37,6 +44,12 @@ public class ProgramController {
 	
 	@Autowired
 	private ProgramService programService;
+	
+	@Autowired
+	private AccessLogService accessLogService;
+	
+	@Autowired
+	private ScheduleService scheduleService;
 	
 	@PostMapping
 	public ResponseEntity<ProgramDto> createOrUpdate(@RequestBody @Valid ProgramForm programForm){
@@ -65,8 +78,14 @@ public class ProgramController {
 	}
 	
 	@GetMapping(path = "/{programId}")
-	public ResponseEntity<ProgramDto> getDetail(@PathVariable Long programId){
+	public ResponseEntity<ProgramDto> getDetail(@PathVariable Long programId, HttpServletRequest request){
 		try {
+			AccessLog log = new AccessLog();
+			log.setCreatedAt(new Date());
+			log.setEndPoint("/programs/{id}");
+			log.setIp(Utils.getClientIpAddress(request));
+			log.setMethod(HttpMethod.GET);
+			accessLogService.createOrUpdate(log);
 			ProgramDto programDto = programService.findById(programId);
 			return ResponseEntity.ok(programDto);
 		} catch (Exception e) {

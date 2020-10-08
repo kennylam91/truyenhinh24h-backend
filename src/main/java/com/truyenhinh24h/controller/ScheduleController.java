@@ -3,6 +3,7 @@ package com.truyenhinh24h.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
@@ -42,9 +43,9 @@ public class ScheduleController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	
+
 	@PostMapping("/import")
-	public ResponseEntity<Void> importMulti(@Valid @RequestBody List<ScheduleForm> forms){
+	public ResponseEntity<Void> importMulti(@Valid @RequestBody List<ScheduleForm> forms) {
 		try {
 			List<Schedule> schedules = forms.stream().map(this::mapper).collect(Collectors.toList());
 			scheduleService.importMulti(schedules);
@@ -56,7 +57,8 @@ public class ScheduleController {
 	}
 
 	@PostMapping(path = "/search")
-	public ResponseEntity<Page<ScheduleDto>> search(@RequestBody ScheduleForm scheduleForm) {
+	public ResponseEntity<Page<ScheduleDto>> search(@RequestBody ScheduleForm scheduleForm,
+			HttpServletRequest request) {
 		try {
 			Page<ScheduleDto> scheduleDtoPage = scheduleService.search(scheduleForm);
 			return ResponseEntity.ok(scheduleDtoPage);
@@ -81,4 +83,6 @@ public class ScheduleController {
 		return schedule;
 
 	}
+
+	
 }

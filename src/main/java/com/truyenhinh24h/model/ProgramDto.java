@@ -1,5 +1,6 @@
 package com.truyenhinh24h.model;
 
+import java.util.List;
 import java.util.Set;
 
 import lombok.Data;
@@ -27,4 +28,5 @@ public class ProgramDto {
 	private Set<Category> categories;
 	
 	private String trailer;
+	
 }

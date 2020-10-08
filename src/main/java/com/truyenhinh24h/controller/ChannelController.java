@@ -1,5 +1,8 @@
 package com.truyenhinh24h.controller;
 
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,19 +22,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truyenhinh24h.common.Utils;
+import com.truyenhinh24h.model.AccessLog;
 import com.truyenhinh24h.model.Channel;
 import com.truyenhinh24h.model.ChannelDto;
+import com.truyenhinh24h.model.HttpMethod;
+import com.truyenhinh24h.service.AccessLogService;
 import com.truyenhinh24h.service.ChannelService;
+import com.truyenhinh24h.service.SequenceGeneratorService;
 
 @RestController
 @RequestMapping("/rest/v1/channels")
-@CrossOrigin(origins = {"http://localhost:3000", "https://truyenhinh24h.live"})
 public class ChannelController {
 
 	private static final Logger logger = LogManager.getLogger(ChannelController.class);
 
 	@Autowired
 	private ChannelService channelService;
+
+	@Autowired
+	private AccessLogService logService;
 
 	@PostMapping
 	public ResponseEntity<ChannelDto> createOrUpdate(@Valid @RequestBody ChannelForm channelForm) {
@@ -60,8 +70,14 @@ public class ChannelController {
 	}
 
 	@PostMapping(path = "/get-all")
-	public ResponseEntity<Page<ChannelDto>> getAll(@RequestBody ChannelForm channelForm) {
+	public ResponseEntity<Page<ChannelDto>> getAll(@RequestBody ChannelForm channelForm, HttpServletRequest request) {
 		try {
+			AccessLog log = new AccessLog();
+			log.setCreatedAt(new Date());
+			log.setEndPoint("/channels/get-all");
+			log.setIp(Utils.getClientIpAddress(request));
+			log.setMethod(HttpMethod.POST);
+			logService.createOrUpdate(log);
 			Sort sort = Sort.by(Sort.Direction.ASC, "name");
 			Pageable pageable = PageRequest.of(channelForm.getPage() - 1, channelForm.getLimit(), sort);
 			Page<ChannelDto> result = channelService.getAll(pageable);
@@ -71,10 +87,16 @@ public class ChannelController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	
+
 	@GetMapping(path = "/{channelId}")
-	public ResponseEntity<ChannelDto> getDetail(@PathVariable Long channelId){
+	public ResponseEntity<ChannelDto> getDetail(@PathVariable Long channelId, HttpServletRequest request) {
 		try {
+			AccessLog log = new AccessLog();
+			log.setCreatedAt(new Date());
+			log.setEndPoint("/channels/{id}");
+			log.setIp(Utils.getClientIpAddress(request));
+			log.setMethod(HttpMethod.GET);
+			logService.createOrUpdate(log);
 			ChannelDto channelDto = channelService.findById(channelId);
 			return ResponseEntity.ok(channelDto);
 		} catch (Exception e) {
@@ -96,4 +118,5 @@ public class ChannelController {
 		channel.setVip(data.isVip());
 		return channel;
 	}
+
 }
