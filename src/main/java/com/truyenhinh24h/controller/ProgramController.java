@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,7 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.truyenhinh24h.common.Utils;
 import com.truyenhinh24h.model.AccessLog;
-import com.truyenhinh24h.model.HttpMethod;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
 import com.truyenhinh24h.model.Schedule;
@@ -110,6 +110,9 @@ public class ProgramController {
 	@PostMapping(path = "/search")
 	public ResponseEntity<Page<ProgramDto>> search(@RequestBody ProgramForm programForm) {
 		try {
+			if(!programForm.isStartTimeFilterValid()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			}
 			Page<ProgramDto> programDtoPage = programService.search(programForm);
 			return ResponseEntity.ok(programDtoPage);
 		} catch (Exception e) {
@@ -134,11 +137,6 @@ public class ProgramController {
 		if(data == null) {
 			return null;
 		}
-		
-//		if(data.getCategories() != null) {
-//			data.setCategoryCodes(data.getCategories());
-//		}
-		
 		Program program = new Program();
 		program.setCategoryCodes(data.getCategoryCodes());
 		program.setDescription(data.getDescription());
