@@ -29,4 +29,7 @@ public class ProgramDto {
 	
 	private String trailer;
 	
+	// dung cho chuong trinh dang phat
+	private List<Schedule> schedules;
+	
 }

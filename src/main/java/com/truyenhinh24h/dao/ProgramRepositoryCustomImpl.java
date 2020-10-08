@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import com.truyenhinh24h.controller.ProgramForm;
 import com.truyenhinh24h.model.Program;
+import com.truyenhinh24h.model.ProgramDto;
 import com.truyenhinh24h.model.Schedule;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -18,6 +19,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,7 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 	private MongoTemplate mongoTemplate;
 
 	@Override
-	public Page<Program> search(ProgramForm programForm, Pageable pageable) throws IllegalArgumentException {
+	public Page<ProgramDto> search(ProgramForm programForm, Pageable pageable) throws IllegalArgumentException {
 		if (pageable == null) {
 			throw new IllegalArgumentException("Pageable must not be null");
 		}
@@ -64,7 +66,18 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 		long total = mongoTemplate.count(query, Program.class);
 		query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
 		List<Program> programs = mongoTemplate.find(query, Program.class);
-		return new PageImpl<>(programs, pageable, total);
+		List<ProgramDto> programDtoList = programs.stream()
+				.map(Program::getDto).collect(Collectors.toList());
+		for (ProgramDto programDto : programDtoList) {
+			if (schedules != null && !schedules.isEmpty()) {
+				List<Schedule> foundSchedules = schedules.stream()
+						.filter(s -> Objects.equals(s.getProgramId(), programDto.getId()))
+						.collect(Collectors.toList());
+				programDto.setSchedules(foundSchedules);
+			}
+		}
+
+		return new PageImpl<>(programDtoList, pageable, total);
 	}
 
 }
