@@ -1,6 +1,7 @@
 package com.truyenhinh24h.controller;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -27,7 +28,7 @@ public class ProgramForm extends BaseForm {
 	// su dung khi import du lieu tu firestore vao
 //	private Long[] categories;
 
-	private Long rank;
+	private List<Long> ranks;
 
 	private long year;
 

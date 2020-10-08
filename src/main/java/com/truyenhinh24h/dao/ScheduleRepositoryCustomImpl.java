@@ -35,7 +35,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 				query.addCriteria(where("startTime").gte(scheduleForm.getStartTime()));
 			}
 			if (scheduleForm.getEndTime() != null) {
-				query.addCriteria(where("endTime").lte(scheduleForm.getEndTime()));
+				query.addCriteria(where("startTime").lte(scheduleForm.getEndTime()));
 			}
 		}
 		query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
