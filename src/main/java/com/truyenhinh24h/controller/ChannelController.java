@@ -93,7 +93,7 @@ public class ChannelController {
 		try {
 			AccessLog log = new AccessLog();
 			log.setCreatedAt(new Date());
-			log.setEndPoint("/channels/{id}");
+			log.setEndPoint("/channels/" + channelId);
 			log.setIp(Utils.getClientIpAddress(request));
 			log.setMethod(HttpMethod.GET);
 			logService.createOrUpdate(log);

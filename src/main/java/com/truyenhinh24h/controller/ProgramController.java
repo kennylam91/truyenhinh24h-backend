@@ -82,7 +82,7 @@ public class ProgramController {
 		try {
 			AccessLog log = new AccessLog();
 			log.setCreatedAt(new Date());
-			log.setEndPoint("/programs/{id}");
+			log.setEndPoint("/programs/" + programId);
 			log.setIp(Utils.getClientIpAddress(request));
 			log.setMethod(HttpMethod.GET);
 			accessLogService.createOrUpdate(log);
