@@ -1,6 +1,7 @@
 package com.truyenhinh24h.controller;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -34,6 +35,7 @@ import com.truyenhinh24h.service.ChannelService;
 public class ChannelController {
 
 	private static final String CHANNEL_PAGE_KEY = "channelPage";
+	private static final String CHANNEL_LIST_KEY = "channelList";
 
 
 	private static final Logger logger = LogManager.getLogger(ChannelController.class);
@@ -74,7 +76,7 @@ public class ChannelController {
 	}
 
 	@PostMapping(path = "/get-all")
-	public ResponseEntity<Page<ChannelDto>> getAll(@RequestBody ChannelForm channelForm, HttpServletRequest request) {
+	public ResponseEntity<List<ChannelDto>> getAll(@RequestBody ChannelForm channelForm, HttpServletRequest request) {
 		try {
 			AccessLog log = new AccessLog();
 			log.setCreatedAt(new Date());
@@ -83,14 +85,14 @@ public class ChannelController {
 			log.setMethod(HttpMethod.POST);
 			logService.createOrUpdate(log);
 			
-			if(Utils.CACHE_MAP.get(CHANNEL_PAGE_KEY) == null) {
+			if(Utils.CACHE_MAP.get(CHANNEL_LIST_KEY) == null) {
 				Sort sort = Sort.by(Sort.Direction.ASC, "name");
-				Pageable pageable = PageRequest.of(channelForm.getPage() - 1, channelForm.getLimit(), sort);
-				Page<ChannelDto> result = channelService.getAll(pageable);
-				Utils.CACHE_MAP.put(CHANNEL_PAGE_KEY, result);
+				Pageable pageable = PageRequest.of(0, 9999, sort);
+				List<ChannelDto> result = channelService.getAll();
+				Utils.CACHE_MAP.put(CHANNEL_LIST_KEY, result);
 				return ResponseEntity.ok(result);
 			} else {
-				return ResponseEntity.ok((Page<ChannelDto>)Utils.CACHE_MAP.get(CHANNEL_PAGE_KEY));
+				return ResponseEntity.ok((List<ChannelDto>)Utils.CACHE_MAP.get(CHANNEL_LIST_KEY));
 			}
 			
 		} catch (Exception e) {

@@ -15,22 +15,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truyenhinh24h.common.Utils;
 import com.truyenhinh24h.model.Category;
 import com.truyenhinh24h.model.CategoryDto;
 import com.truyenhinh24h.service.CategoryService;
 
 @RestController
 @RequestMapping(path = "/rest/v1/categories")
-@CrossOrigin(origins = {"http://localhost:3000", "https://truyenhinh24h.live"})
+@CrossOrigin(origins = { "http://localhost:3000", "https://truyenhinh24h.live" })
 public class CategoryController {
 
+	private static final String CATEGORY_LIST_KEY = "categoryList";
+
 	private static final Logger logger = LogManager.getLogger(CategoryController.class);
-	
+
 	@Autowired
 	private CategoryService categoryService;
-	
+
 	@PostMapping
-	public ResponseEntity<CategoryDto> createOrUpdate(@RequestBody @Valid CategoryForm categoryForm){
+	public ResponseEntity<CategoryDto> createOrUpdate(@RequestBody @Valid CategoryForm categoryForm) {
 		logger.info("Create category");
 		Category category = mapper(categoryForm);
 		try {
@@ -42,20 +45,26 @@ public class CategoryController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	
+
 	@PostMapping(path = "/get-all")
 	public ResponseEntity<List<CategoryDto>> getAll(@RequestBody CategoryForm categoryForm) {
 		try {
-			List<CategoryDto> result = categoryService.getAll();
-			return ResponseEntity.ok(result);
+			if (Utils.CACHE_MAP.get(CATEGORY_LIST_KEY) == null) {
+				List<CategoryDto> result = categoryService.getAll();
+				Utils.CACHE_MAP.put(CATEGORY_LIST_KEY, result);
+				return ResponseEntity.ok(result);
+			} else {
+				return ResponseEntity.ok((List<CategoryDto>) Utils.CACHE_MAP.get(CATEGORY_LIST_KEY));
+			}
+
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
-	
+
 	private Category mapper(CategoryForm data) {
-		if(data == null) {
+		if (data == null) {
 			return null;
 		}
 		Category category = new Category();

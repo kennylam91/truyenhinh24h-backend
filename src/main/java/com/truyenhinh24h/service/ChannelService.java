@@ -83,6 +83,12 @@ public class ChannelService {
 		}
 		
 	}
+	
+	public List<ChannelDto> getAll(){
+		return channelRepository.findAll().stream().map(this::mapper).collect(Collectors.toList())
+				;
+		
+	}
 
 	public ChannelDto findById(Long channelId) {
 		Optional<Channel> optional = channelRepository.findById(channelId);
