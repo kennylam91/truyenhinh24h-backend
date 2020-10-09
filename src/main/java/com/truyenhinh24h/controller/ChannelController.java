@@ -33,7 +33,11 @@ import com.truyenhinh24h.service.ChannelService;
 @RequestMapping("/rest/v1/channels")
 public class ChannelController {
 
+	private static final String CHANNEL_PAGE_KEY = "channelPage";
+
+
 	private static final Logger logger = LogManager.getLogger(ChannelController.class);
+	
 
 	@Autowired
 	private ChannelService channelService;
@@ -47,6 +51,7 @@ public class ChannelController {
 		Channel channel = mapper(channelForm);
 		try {
 			ChannelDto channelDto = channelService.createOrUpdate(channel);
+			Utils.CACHE_MAP.remove(CHANNEL_PAGE_KEY);
 			logger.info("Channel created: {}", channelDto);
 			return ResponseEntity.ok(channelDto);
 		} catch (Exception e) {
@@ -60,6 +65,7 @@ public class ChannelController {
 		try {
 			channelService.deleteMulti(channelForm.getChannelIds());
 			logger.info("Deleted Channel: {}", channelForm.getChannelIds().toString());
+			Utils.CACHE_MAP.remove(CHANNEL_PAGE_KEY);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -76,10 +82,17 @@ public class ChannelController {
 			log.setIp(Utils.getClientIpAddress(request));
 			log.setMethod(HttpMethod.POST);
 			logService.createOrUpdate(log);
-			Sort sort = Sort.by(Sort.Direction.ASC, "name");
-			Pageable pageable = PageRequest.of(channelForm.getPage() - 1, channelForm.getLimit(), sort);
-			Page<ChannelDto> result = channelService.getAll(pageable);
-			return ResponseEntity.ok(result);
+			
+			if(Utils.CACHE_MAP.get(CHANNEL_PAGE_KEY) == null) {
+				Sort sort = Sort.by(Sort.Direction.ASC, "name");
+				Pageable pageable = PageRequest.of(channelForm.getPage() - 1, channelForm.getLimit(), sort);
+				Page<ChannelDto> result = channelService.getAll(pageable);
+				Utils.CACHE_MAP.put(CHANNEL_PAGE_KEY, result);
+				return ResponseEntity.ok(result);
+			} else {
+				return ResponseEntity.ok((Page<ChannelDto>)Utils.CACHE_MAP.get(CHANNEL_PAGE_KEY));
+			}
+			
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

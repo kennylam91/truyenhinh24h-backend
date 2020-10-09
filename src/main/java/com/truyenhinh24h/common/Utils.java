@@ -1,5 +1,8 @@
 package com.truyenhinh24h.common;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 public class Utils {
@@ -23,4 +26,6 @@ public class Utils {
 
 		return request.getRemoteAddr();
 	}
+	
+	public static final Map<String, Object> CACHE_MAP = new HashMap<String, Object>();
 }
