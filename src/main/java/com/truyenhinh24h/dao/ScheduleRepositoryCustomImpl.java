@@ -31,11 +31,9 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 			if (scheduleForm.getProgramId() != null) {
 				query.addCriteria(where("programId").is(scheduleForm.getProgramId()));
 			}
-			if (scheduleForm.getStartTime() != null) {
-				query.addCriteria(where("startTime").gte(scheduleForm.getStartTime()));
-			}
-			if (scheduleForm.getEndTime() != null) {
-				query.addCriteria(where("startTime").lte(scheduleForm.getEndTime()));
+			if (scheduleForm.getStartTime() != null && scheduleForm.getEndTime() != null) {
+				query.addCriteria(where("startTime").gte(scheduleForm.getStartTime())
+					 .andOperator(where("startTime").lte(scheduleForm.getEndTime())));
 			}
 		}
 		query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
