@@ -1,5 +1,6 @@
 package com.truyenhinh24h.controller;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +65,21 @@ public class ScheduleController {
 			return ResponseEntity.ok(scheduleDtoPage);
 		} catch (Exception e) {
 			logger.error(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
+	@PostMapping(path="/delete-multi")
+	public ResponseEntity<Void> deleteMulti(@RequestBody ScheduleForm scheduleForm) {
+		if(scheduleForm.getScheduleIds() == null || scheduleForm.getScheduleIds().isEmpty()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+		try {
+			scheduleService.deleteMulti(scheduleForm.getScheduleIds());
+			logger.info("Deleted Program : {}", scheduleForm.getScheduleIds());
+			return ResponseEntity.ok().build();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}

@@ -184,7 +184,7 @@ public class ProgramController {
 		program.setName(data.getName());
 		program.setEnName(data.getEnName());
 		program.setId(data.getId());
-		program.setRank(data.getRank() != null ? data.getRank() : 1L);
+		program.setRank(data.getRank());
 		program.setYear(data.getYear());
 		program.setTrailer(data.getTrailer());
 		

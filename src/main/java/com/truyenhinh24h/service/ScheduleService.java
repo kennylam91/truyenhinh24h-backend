@@ -101,4 +101,9 @@ public class ScheduleService {
 		return schedule;
 	}
 
+	public void deleteMulti(List<Long> scheduleIds) {
+		scheduleRepository.deleteByIdIn(scheduleIds);
+		
+	}
+
 }
