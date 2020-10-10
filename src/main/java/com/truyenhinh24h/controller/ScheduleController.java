@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truyenhinh24h.dao.StatsData;
 import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.model.ScheduleDto;
 import com.truyenhinh24h.service.ScheduleService;
@@ -80,6 +81,15 @@ public class ScheduleController {
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
+	@PostMapping(path = "/stats")
+	public ResponseEntity<List<StatsData>> getScheduleStats(@RequestBody ScheduleForm form){
+		try {
+			return ResponseEntity.ok(scheduleService.getScheduleStats(form));
+		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}

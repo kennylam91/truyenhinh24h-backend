@@ -15,8 +15,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.truyenhinh24h.controller.ChannelForm;
 import com.truyenhinh24h.controller.ScheduleForm;
 import com.truyenhinh24h.dao.ScheduleRepository;
+import com.truyenhinh24h.dao.StatsData;
 import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.model.ScheduleDto;
 
@@ -104,6 +106,10 @@ public class ScheduleService {
 	public void deleteMulti(List<Long> scheduleIds) {
 		scheduleRepository.deleteByIdIn(scheduleIds);
 		
+	}
+
+	public List<StatsData> getScheduleStats(ScheduleForm form) {
+		return scheduleRepository.getStats(form);
 	}
 
 }

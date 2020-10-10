@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.truyenhinh24h.common.Utils;
+import com.truyenhinh24h.dao.StatsData;
 import com.truyenhinh24h.model.AccessLog;
 import com.truyenhinh24h.model.Channel;
 import com.truyenhinh24h.model.ChannelDto;
@@ -114,6 +115,8 @@ public class ChannelController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
+	
+	
 
 	private Channel mapper(ChannelForm data) {
 		if (data == null) {

@@ -1,5 +1,7 @@
 package com.truyenhinh24h.controller;
 
+import java.util.Date;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -26,4 +28,6 @@ public class ChannelForm extends BaseForm {
 	private Long networkId;
 	
 	private Long[] channelIds;
+	
+	
 }

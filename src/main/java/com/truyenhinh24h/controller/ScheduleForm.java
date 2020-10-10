@@ -9,11 +9,12 @@ import javax.validation.constraints.NotNull;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class ScheduleForm extends BaseForm {
-	
+
 	private Long id;
 
 	@NotNull(message = "ChannelId must not be null")
@@ -32,7 +33,11 @@ public class ScheduleForm extends BaseForm {
 
 	@NotEmpty(message = "ChannelName must not be null")
 	private String channelName;
-	
+
 	private List<Long> scheduleIds;
+
+	private Date startTimeFrom;
+
+	private Date startTimeTo;
 
 }
