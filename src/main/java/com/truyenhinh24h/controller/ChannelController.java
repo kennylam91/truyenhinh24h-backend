@@ -34,7 +34,6 @@ import com.truyenhinh24h.service.ChannelService;
 @RequestMapping("/rest/v1/channels")
 public class ChannelController {
 
-	private static final String CHANNEL_PAGE_KEY = "channelPage";
 	private static final String CHANNEL_LIST_KEY = "channelList";
 
 
@@ -53,7 +52,7 @@ public class ChannelController {
 		Channel channel = mapper(channelForm);
 		try {
 			ChannelDto channelDto = channelService.createOrUpdate(channel);
-			Utils.CACHE_MAP.remove(CHANNEL_PAGE_KEY);
+			Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
 			logger.info("Channel created: {}", channelDto);
 			return ResponseEntity.ok(channelDto);
 		} catch (Exception e) {
@@ -67,7 +66,7 @@ public class ChannelController {
 		try {
 			channelService.deleteMulti(channelForm.getChannelIds());
 			logger.info("Deleted Channel: {}", channelForm.getChannelIds().toString());
-			Utils.CACHE_MAP.remove(CHANNEL_PAGE_KEY);
+			Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			logger.error(e.getMessage());
@@ -86,8 +85,6 @@ public class ChannelController {
 			logService.createOrUpdate(log);
 			
 			if(Utils.CACHE_MAP.get(CHANNEL_LIST_KEY) == null) {
-				Sort sort = Sort.by(Sort.Direction.ASC, "name");
-				Pageable pageable = PageRequest.of(0, 9999, sort);
 				List<ChannelDto> result = channelService.getAll();
 				Utils.CACHE_MAP.put(CHANNEL_LIST_KEY, result);
 				return ResponseEntity.ok(result);

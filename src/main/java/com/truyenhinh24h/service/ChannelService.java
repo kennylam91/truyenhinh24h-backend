@@ -69,21 +69,6 @@ public class ChannelService {
 		return channelDto;
 	}
 
-	public Page<ChannelDto> getAll(Pageable pageable) {
-		Page<Channel> channelPage = channelRepository.findAll(pageable);
-		List<ChannelDto> channelDtoList = null;
-		
-		if(channelPage.hasContent()) {
-			channelDtoList = channelPage.getContent().stream().map(this::mapper)
-					.collect(Collectors.toList());
-			return new PageImpl<ChannelDto>(channelDtoList, pageable, 
-					channelPage.getTotalElements());
-		}else {
-			return new PageImpl<>(Collections.emptyList());
-		}
-		
-	}
-	
 	public List<ChannelDto> getAll(){
 		return channelRepository.findAll().stream().map(this::mapper).collect(Collectors.toList())
 				;
