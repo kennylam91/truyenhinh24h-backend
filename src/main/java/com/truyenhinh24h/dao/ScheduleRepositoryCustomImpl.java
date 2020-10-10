@@ -58,7 +58,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 								.andOperator(where("startTime").lte(form.getStartTimeTo()))),
 						Aggregation.project("channelId", "startTime")
 						.andExpression("{$dateToString: "
-								+ "{date: \"$startTime\", format: \"%Y-%m-%d\", timezone: \"+08\"}}")
+								+ "{date: \"$startTime\", format: \"%Y-%m-%d\", timezone: \"+07\"}}")
 								.as("date"),
 						Aggregation.group("channelId", "date").count().as("total"),
 						Aggregation.project("total").and("_id.channelId").as("channelId")
