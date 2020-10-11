@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.truyenhinh24h.common.Utils;
+import com.truyenhinh24h.dao.ProgramRepository;
 import com.truyenhinh24h.model.AccessLog;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
@@ -50,6 +51,9 @@ public class ProgramController {
 
 	@Autowired
 	private ScheduleService scheduleService;
+	
+	@Autowired
+	private ProgramRepository programRepository;
 
 	@PostMapping
 	public ResponseEntity<ProgramDto> createOrUpdate(@RequestBody @Valid ProgramForm programForm) {
@@ -58,6 +62,23 @@ public class ProgramController {
 		ProgramDto result = programService.createOrUpdate(program);
 		logger.info("Program created: {}", result);
 		return ResponseEntity.ok(result);
+	}
+	
+//	@GetMapping(path = "/update-db")
+	public void updateDb() {
+		List<Program> programs = programRepository.findAll();
+		for (Program program : programs) {
+			if(!program.getName().contentEquals(program.getEnName())) {
+				String onlyTextName = program.getName().replaceAll(Utils.SYMBOL_REGEX, "") + " " +
+						program.getEnName().replaceAll(Utils.SYMBOL_REGEX, "");
+				program.setOnlyTextName(onlyTextName);
+			} else {
+				program.setOnlyTextName(program.getName());
+			}
+			
+			programRepository.save(program);
+		}
+		
 	}
 
 	@PostMapping(path = "/delete-multi")
@@ -149,6 +170,7 @@ public class ProgramController {
 		program.setRank(data.getRank());
 		program.setYear(data.getYear());
 		program.setTrailer(data.getTrailer());
+		program.setOnlyTextName(data.getOnlyTextName());
 
 		return program;
 	}

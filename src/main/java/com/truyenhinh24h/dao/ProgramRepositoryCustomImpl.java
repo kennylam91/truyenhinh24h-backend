@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import com.truyenhinh24h.common.Utils;
 import com.truyenhinh24h.controller.ProgramForm;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
@@ -32,9 +33,11 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 	public Page<ProgramDto> search(ProgramForm programForm, Pageable pageable) {
 		final Query query = new Query();
 		if (programForm.getSearchName() != null) {
-			Criteria nameCriteria = where("name").regex(programForm.getSearchName());
-			Criteria enNameCriterial = where("enName").regex(programForm.getSearchName());
-			query.addCriteria(new Criteria().orOperator(nameCriteria, enNameCriterial));
+//			Criteria nameCriteria = where("name").regex(programForm.getSearchName());
+//			Criteria enNameCriterial = where("enName").regex(programForm.getSearchName());
+//			query.addCriteria(new Criteria().orOperator(nameCriteria, enNameCriterial));
+			query.addCriteria(where("onlyTextName")
+					.regex(programForm.getSearchName().replaceAll(Utils.SYMBOL_REGEX, "")));
 		}
 		if (programForm.getCategoryCodes() != null) {
 			Criteria categoryCriteria = where("categoryCodes")

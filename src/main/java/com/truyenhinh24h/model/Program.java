@@ -23,6 +23,9 @@ public class Program {
 
 	@Indexed(name = "program_enName_index")
 	private String enName;
+	
+	@Indexed(name = "only_text_name_index")
+	private String onlyTextName;
 
 	private String description;
 

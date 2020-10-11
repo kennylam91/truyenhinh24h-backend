@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
 
+import com.truyenhinh24h.common.Utils;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,5 +60,9 @@ public class ProgramForm extends BaseForm {
 	public boolean isStartTimeFilterValid() {
 		return ((startTimeFrom != null) && (startTimeTo != null)) || 
 				((startTimeFrom == null) && (startTimeTo == null));
+	}
+	public String getOnlyTextName() {
+		return name.replaceAll(Utils.SYMBOL_REGEX, "") + " " + 
+				enName.replaceAll(Utils.SYMBOL_REGEX, "");
 	}
 }
