@@ -24,10 +24,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 	private MongoTemplate mongoTemplate;
 
 	@Override
-	public Page<Schedule> search(ScheduleForm scheduleForm, Pageable pageable) throws IllegalArgumentException {
-		if (pageable == null) {
-			throw new IllegalArgumentException("Pageable must not be null");
-		}
+	public Page<Schedule> search(ScheduleForm scheduleForm, Pageable pageable) {
 		final Query query = new Query();
 		if (scheduleForm != null) {
 			if (scheduleForm.getChannelId() != null) {

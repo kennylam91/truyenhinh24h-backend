@@ -37,9 +37,7 @@ public class ChannelController {
 
 	private static final String CHANNEL_LIST_KEY = "channelList";
 
-
 	private static final Logger logger = LogManager.getLogger(ChannelController.class);
-	
 
 	@Autowired
 	private ChannelService channelService;
@@ -51,72 +49,49 @@ public class ChannelController {
 	public ResponseEntity<ChannelDto> createOrUpdate(@Valid @RequestBody ChannelForm channelForm) {
 		logger.info("Create channel");
 		Channel channel = mapper(channelForm);
-		try {
-			ChannelDto channelDto = channelService.createOrUpdate(channel);
-			Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
-			logger.info("Channel created: {}", channelDto);
-			return ResponseEntity.ok(channelDto);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		}
+		ChannelDto channelDto = channelService.createOrUpdate(channel);
+		Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
+		logger.info("Channel created: {}", channelDto);
+		return ResponseEntity.ok(channelDto);
 	}
 
 	@PostMapping(path = "/delete-multi")
 	public ResponseEntity<Void> deleteMulti(@RequestBody ChannelForm channelForm) {
-		try {
-			channelService.deleteMulti(channelForm.getChannelIds());
-			logger.info("Deleted Channel: {}", channelForm.getChannelIds().toString());
-			Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		channelService.deleteMulti(channelForm.getChannelIds());
+		logger.info("Deleted Channel: {}", channelForm.getChannelIds().toString());
+		Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
+		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping(path = "/get-all")
 	public ResponseEntity<List<ChannelDto>> getAll(@RequestBody ChannelForm channelForm, HttpServletRequest request) {
-		try {
-			AccessLog log = new AccessLog();
-			log.setCreatedAt(new Date());
-			log.setEndPoint("/channels/get-all");
-			log.setIp(Utils.getClientIpAddress(request));
-			log.setMethod(HttpMethod.POST);
-			logService.createOrUpdate(log);
-			
-			if(Utils.CACHE_MAP.get(CHANNEL_LIST_KEY) == null) {
-				List<ChannelDto> result = channelService.getAll();
-				Utils.CACHE_MAP.put(CHANNEL_LIST_KEY, result);
-				return ResponseEntity.ok(result);
-			} else {
-				return ResponseEntity.ok((List<ChannelDto>)Utils.CACHE_MAP.get(CHANNEL_LIST_KEY));
-			}
-			
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		AccessLog log = new AccessLog();
+		log.setCreatedAt(new Date());
+		log.setEndPoint("/channels/get-all");
+		log.setIp(Utils.getClientIpAddress(request));
+		log.setMethod(HttpMethod.POST);
+		logService.createOrUpdate(log);
+
+		if (Utils.CACHE_MAP.get(CHANNEL_LIST_KEY) == null) {
+			List<ChannelDto> result = channelService.getAll();
+			Utils.CACHE_MAP.put(CHANNEL_LIST_KEY, result);
+			return ResponseEntity.ok(result);
+		} else {
+			return ResponseEntity.ok((List<ChannelDto>) Utils.CACHE_MAP.get(CHANNEL_LIST_KEY));
 		}
 	}
 
 	@GetMapping(path = "/{channelId}")
 	public ResponseEntity<ChannelDto> getDetail(@PathVariable Long channelId, HttpServletRequest request) {
-		try {
-			AccessLog log = new AccessLog();
-			log.setCreatedAt(new Date());
-			log.setEndPoint("/channels/" + channelId);
-			log.setIp(Utils.getClientIpAddress(request));
-			log.setMethod(HttpMethod.GET);
-			logService.createOrUpdate(log);
-			ChannelDto channelDto = channelService.findById(channelId);
-			return ResponseEntity.ok(channelDto);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		AccessLog log = new AccessLog();
+		log.setCreatedAt(new Date());
+		log.setEndPoint("/channels/" + channelId);
+		log.setIp(Utils.getClientIpAddress(request));
+		log.setMethod(HttpMethod.GET);
+		logService.createOrUpdate(log);
+		ChannelDto channelDto = channelService.findById(channelId);
+		return ResponseEntity.ok(channelDto);
 	}
-	
-	
 
 	private Channel mapper(ChannelForm data) {
 		if (data == null) {

@@ -10,7 +10,7 @@ import com.truyenhinh24h.model.Schedule;
 
 public interface ScheduleRepositoryCustom {
 
-	Page<Schedule> search(ScheduleForm scheduleForm, Pageable pageable) throws IllegalArgumentException;
+	Page<Schedule> search(ScheduleForm scheduleForm, Pageable pageable);
 	
 	List<StatsData> getStats(ScheduleForm form);
 }

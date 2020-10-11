@@ -24,19 +24,18 @@ import com.truyenhinh24h.model.ScheduleDto;
 
 @Service
 public class ScheduleService {
-	
+
 	private static final Logger logger = LogManager.getLogger(ScheduleService.class);
 
-	
 	@Autowired
 	private ScheduleRepository scheduleRepository;
-	
+
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
-	
+
 	public ScheduleDto createOrUpdate(Schedule schedule) {
 		Schedule result = null;
-		if(schedule.getId() == null) {
+		if (schedule.getId() == null) {
 			schedule.setId(sequenceGeneratorService.generateSequence(Schedule.SEQUENCE_NAME));
 			result = scheduleRepository.insert(schedule);
 		} else {
@@ -44,16 +43,12 @@ public class ScheduleService {
 		}
 		return mapper(result);
 	}
-	
+
 	public Page<ScheduleDto> search(ScheduleForm scheduleForm) {
-		Pageable pageable = PageRequest.of(scheduleForm.getPage() - 1, scheduleForm.getLimit(), 
+		Pageable pageable = PageRequest.of(scheduleForm.getPage() - 1, scheduleForm.getLimit(),
 				Sort.by(Sort.Direction.ASC, "startTime"));
 		Page<Schedule> schedulePage = null;
-		try {
-			schedulePage = scheduleRepository.search(scheduleForm, pageable);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
+		schedulePage = scheduleRepository.search(scheduleForm, pageable);
 		if (schedulePage == null || !schedulePage.hasContent()) {
 			return new PageImpl<>(Collections.emptyList(), pageable, 0);
 		} else {
@@ -62,19 +57,19 @@ public class ScheduleService {
 			return new PageImpl<>(scheduleDtoList, pageable, schedulePage.getTotalElements());
 		}
 	}
-	
+
 	@Transactional
 	public void importMulti(List<Schedule> schedules) {
 		for (Schedule schedule : schedules) {
-			if(schedule.getId() == null) {
+			if (schedule.getId() == null) {
 				schedule.setId(sequenceGeneratorService.generateSequence(Schedule.SEQUENCE_NAME));
 			}
 			scheduleRepository.save(schedule);
 		}
 	}
-	
+
 	Schedule mapper(ScheduleDto data) {
-		if(data == null) {
+		if (data == null) {
 			return null;
 		}
 		Schedule schedule = new Schedule();
@@ -87,9 +82,9 @@ public class ScheduleService {
 		schedule.setStartTime(data.getStartTime());
 		return schedule;
 	}
-	
+
 	ScheduleDto mapper(Schedule data) {
-		if(data == null) {
+		if (data == null) {
 			return null;
 		}
 		ScheduleDto schedule = new ScheduleDto();
@@ -105,7 +100,7 @@ public class ScheduleService {
 
 	public void deleteMulti(List<Long> scheduleIds) {
 		scheduleRepository.deleteByIdIn(scheduleIds);
-		
+
 	}
 
 	public List<StatsData> getScheduleStats(ScheduleForm form) {

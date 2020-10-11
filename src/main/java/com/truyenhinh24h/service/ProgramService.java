@@ -24,22 +24,21 @@ import com.truyenhinh24h.model.ProgramDto;
 
 @Service
 public class ProgramService {
-	
-	private static final Logger logger = LogManager.getLogger(ProgramService.class);
 
+	private static final Logger logger = LogManager.getLogger(ProgramService.class);
 
 	@Autowired
 	private ProgramRepository programRepository;
-	
+
 	@Autowired
 	private CategoryRepository categoryRepository;
-	
+
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
-	
-	public ProgramDto createOrUpdate(Program program) { 
+
+	public ProgramDto createOrUpdate(Program program) {
 		Program result = null;
-		if(program.getId() == null) {
+		if (program.getId() == null) {
 			program.setId(sequenceGeneratorService.generateSequence(Program.SEQUENCE_NAME));
 			result = programRepository.insert(program);
 		} else {
@@ -47,11 +46,11 @@ public class ProgramService {
 		}
 		return result.getDto();
 	}
-	
+
 	public void deleteMulti(Long[] ids) {
 		programRepository.deleteByIdIn(ids);
 	}
-	
+
 	public ProgramDto findById(Long id) {
 		Optional<Program> optional = programRepository.findById(id);
 		if (optional.isPresent()) {
@@ -62,35 +61,29 @@ public class ProgramService {
 			return null;
 		}
 	}
-	
+
 	public Page<ProgramDto> getAll(Pageable pageable) {
 		Page<Program> programPage = programRepository.findAll(pageable);
 		List<ProgramDto> programDtoList = Collections.emptyList();
 		if (programPage.hasContent()) {
-			programDtoList = programPage.getContent().stream().map(Program::getDto)
-					.collect(Collectors.toList());
+			programDtoList = programPage.getContent().stream().map(Program::getDto).collect(Collectors.toList());
 			for (ProgramDto programDto : programDtoList) {
-				if(programDto.getCategoryCodes() != null && programDto.getCategoryCodes().length > 0) {
+				if (programDto.getCategoryCodes() != null && programDto.getCategoryCodes().length > 0) {
 					programDto.setCategories(categoryRepository.findByCodeIn(programDto.getCategoryCodes()));
 				}
 			}
 		}
-		return new PageImpl<>(programDtoList, pageable,
-				programPage.getTotalElements());
+		return new PageImpl<>(programDtoList, pageable, programPage.getTotalElements());
 	}
-	
-	public Page<ProgramDto> search(ProgramForm programForm){
+
+	public Page<ProgramDto> search(ProgramForm programForm) {
 		Sort sort = Sort.by(Sort.Direction.ASC, "name");
-		if(programForm.getSortBy() != null) {
+		if (programForm.getSortBy() != null) {
 			sort = Sort.by(programForm.getSortDirectionObj(), programForm.getSortBy());
 		}
 		Pageable pageable = PageRequest.of(programForm.getPage() - 1, programForm.getLimit(), sort);
 		Page<ProgramDto> programDtoPage = null;
-		try {
-			programDtoPage = programRepository.search(programForm, pageable);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-		}
+		programDtoPage = programRepository.search(programForm, pageable);
 		if (programDtoPage == null || !programDtoPage.hasContent()) {
 			return new PageImpl<>(Collections.emptyList());
 		} else {
@@ -101,9 +94,9 @@ public class ProgramService {
 			return new PageImpl<>(programDtoList, pageable, programDtoPage.getTotalElements());
 		}
 	}
-	
+
 	Program mapper(ProgramDto programDto) {
-		if(programDto == null) {
+		if (programDto == null) {
 			return null;
 		}
 		Program program = new Program();
@@ -122,11 +115,11 @@ public class ProgramService {
 	@Transactional
 	public void importMulti(List<Program> programs) {
 		for (Program program : programs) {
-			if(program.getId() == null) {
+			if (program.getId() == null) {
 				program.setId(sequenceGeneratorService.generateSequence(Program.SEQUENCE_NAME));
 			}
 			programRepository.save(program);
 		}
-		
+
 	}
 }

@@ -29,10 +29,7 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 	private MongoTemplate mongoTemplate;
 
 	@Override
-	public Page<ProgramDto> search(ProgramForm programForm, Pageable pageable) throws IllegalArgumentException {
-		if (pageable == null) {
-			throw new IllegalArgumentException("Pageable must not be null");
-		}
+	public Page<ProgramDto> search(ProgramForm programForm, Pageable pageable) {
 		final Query query = new Query();
 		if (programForm.getSearchName() != null) {
 			Criteria nameCriteria = where("name").regex(programForm.getSearchName());

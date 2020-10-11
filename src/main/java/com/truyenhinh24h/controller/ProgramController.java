@@ -37,144 +37,106 @@ import com.truyenhinh24h.service.ScheduleService;
 
 @RestController
 @RequestMapping(path = "/rest/v1/programs")
-@CrossOrigin(origins = {"http://localhost:3000", "https://truyenhinh24h.live"})
+@CrossOrigin(origins = { "http://localhost:3000", "https://truyenhinh24h.live" })
 public class ProgramController {
-	
+
 	private static final Logger logger = LogManager.getLogger(ProgramController.class);
-	
+
 	@Autowired
 	private ProgramService programService;
-	
+
 	@Autowired
 	private AccessLogService accessLogService;
-	
+
 	@Autowired
 	private ScheduleService scheduleService;
-	
+
 	@PostMapping
-	public ResponseEntity<ProgramDto> createOrUpdate(@RequestBody @Valid ProgramForm programForm){
+	public ResponseEntity<ProgramDto> createOrUpdate(@RequestBody @Valid ProgramForm programForm) {
 		logger.info("Create program");
 		Program program = mapper(programForm);
-		try {
-			ProgramDto result = programService.createOrUpdate(program);
-			logger.info("Program created: {}", result);
-			return ResponseEntity.ok(result);
-		} catch (Exception e) {
-			logger.error(e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		ProgramDto result = programService.createOrUpdate(program);
+		logger.info("Program created: {}", result);
+		return ResponseEntity.ok(result);
 	}
-	
-	@PostMapping(path="/delete-multi")
+
+	@PostMapping(path = "/delete-multi")
 	public ResponseEntity<Void> deleteMulti(@RequestBody ProgramForm programForm) {
-		try {
-			programService.deleteMulti(programForm.getProgramIds());
-			logger.info("Deleted Program : {}", Arrays.toString(programForm.getProgramIds()));
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		programService.deleteMulti(programForm.getProgramIds());
+		logger.info("Deleted Program : {}", Arrays.toString(programForm.getProgramIds()));
+		return ResponseEntity.ok().build();
 	}
-	
+
 	@GetMapping(path = "/{programId}")
-	public ResponseEntity<ProgramDto> getDetail(@PathVariable Long programId, HttpServletRequest request){
-		try {
-			AccessLog log = new AccessLog();
-			log.setCreatedAt(new Date());
-			log.setEndPoint("/programs/" + programId);
-			log.setIp(Utils.getClientIpAddress(request));
-			log.setMethod(HttpMethod.GET);
-			accessLogService.createOrUpdate(log);
-			ProgramDto programDto = programService.findById(programId);
-			return ResponseEntity.ok(programDto);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+	public ResponseEntity<ProgramDto> getDetail(@PathVariable Long programId, HttpServletRequest request) {
+		AccessLog log = new AccessLog();
+		log.setCreatedAt(new Date());
+		log.setEndPoint("/programs/" + programId);
+		log.setIp(Utils.getClientIpAddress(request));
+		log.setMethod(HttpMethod.GET);
+		accessLogService.createOrUpdate(log);
+		ProgramDto programDto = programService.findById(programId);
+		return ResponseEntity.ok(programDto);
 	}
-	
+
 	@PostMapping(path = "/today")
-	public ResponseEntity<Page<ProgramDto>> getTodayPrograms(@RequestBody ProgramForm form, HttpServletRequest request){
-		try {
-			if(!form.isStartTimeFilterValid()) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-			}
-			AccessLog log = new AccessLog();
-			log.setCreatedAt(new Date());
-			log.setEndPoint("/programs/today");
-			log.setIp(Utils.getClientIpAddress(request));
-			log.setMethod(HttpMethod.POST);
-			accessLogService.createOrUpdate(log);
-			Page<ProgramDto> programDtoPage = programService.search(form);
-			return ResponseEntity.ok(programDtoPage);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	public ResponseEntity<Page<ProgramDto>> getTodayPrograms(@RequestBody ProgramForm form,
+			HttpServletRequest request) {
+		if (!form.isStartTimeFilterValid()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
+		AccessLog log = new AccessLog();
+		log.setCreatedAt(new Date());
+		log.setEndPoint("/programs/today");
+		log.setIp(Utils.getClientIpAddress(request));
+		log.setMethod(HttpMethod.POST);
+		accessLogService.createOrUpdate(log);
+		Page<ProgramDto> programDtoPage = programService.search(form);
+		return ResponseEntity.ok(programDtoPage);
 	}
-	
+
 	@PostMapping(path = "/tomorrow")
-	public ResponseEntity<Page<ProgramDto>> getTomorrowPrograms(@RequestBody ProgramForm form, HttpServletRequest request){
-		try {
-			if(!form.isStartTimeFilterValid()) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-			}
-			AccessLog log = new AccessLog();
-			log.setCreatedAt(new Date());
-			log.setEndPoint("/programs/tomorrow");
-			log.setIp(Utils.getClientIpAddress(request));
-			log.setMethod(HttpMethod.POST);
-			accessLogService.createOrUpdate(log);
-			Page<ProgramDto> programDtoPage = programService.search(form);
-			return ResponseEntity.ok(programDtoPage);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+	public ResponseEntity<Page<ProgramDto>> getTomorrowPrograms(@RequestBody ProgramForm form,
+			HttpServletRequest request) {
+		if (!form.isStartTimeFilterValid()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
+		AccessLog log = new AccessLog();
+		log.setCreatedAt(new Date());
+		log.setEndPoint("/programs/tomorrow");
+		log.setIp(Utils.getClientIpAddress(request));
+		log.setMethod(HttpMethod.POST);
+		accessLogService.createOrUpdate(log);
+		Page<ProgramDto> programDtoPage = programService.search(form);
+		return ResponseEntity.ok(programDtoPage);
 	}
-	
+
 	@PostMapping(path = "/get-all")
 	public ResponseEntity<Page<ProgramDto>> getAll(@RequestBody ProgramForm programForm) {
-		try {
-			Sort sort = Sort.by(Sort.Direction.ASC, "name");
-			Pageable pageable = PageRequest.of(programForm.getPage() - 1, programForm.getLimit(), sort);
-			Page<ProgramDto> result = programService.getAll(pageable);
-			return ResponseEntity.ok(result);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		Sort sort = Sort.by(Sort.Direction.ASC, "name");
+		Pageable pageable = PageRequest.of(programForm.getPage() - 1, programForm.getLimit(), sort);
+		Page<ProgramDto> result = programService.getAll(pageable);
+		return ResponseEntity.ok(result);
 	}
-	
+
 	@PostMapping(path = "/search")
 	public ResponseEntity<Page<ProgramDto>> search(@RequestBody ProgramForm programForm) {
-		try {
-			if(!programForm.isStartTimeFilterValid()) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-			}
-			Page<ProgramDto> programDtoPage = programService.search(programForm);
-			return ResponseEntity.ok(programDtoPage);
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		if (!programForm.isStartTimeFilterValid()) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
+		Page<ProgramDto> programDtoPage = programService.search(programForm);
+		return ResponseEntity.ok(programDtoPage);
 	}
-	
+
 	@PostMapping("/import")
-	public ResponseEntity<Void> importMulti(@Valid @RequestBody List<ProgramForm> forms){
-		try {
-			List<Program> programs = forms.stream().map(this::mapper).collect(Collectors.toList());
-			programService.importMulti(programs);
-			return ResponseEntity.ok().build();
-		} catch (Exception e) {
-			logger.error(e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+	public ResponseEntity<Void> importMulti(@Valid @RequestBody List<ProgramForm> forms) {
+		List<Program> programs = forms.stream().map(this::mapper).collect(Collectors.toList());
+		programService.importMulti(programs);
+		return ResponseEntity.ok().build();
 	}
-	
+
 	private Program mapper(ProgramForm data) {
-		if(data == null) {
+		if (data == null) {
 			return null;
 		}
 		Program program = new Program();
@@ -187,7 +149,7 @@ public class ProgramController {
 		program.setRank(data.getRank());
 		program.setYear(data.getYear());
 		program.setTrailer(data.getTrailer());
-		
+
 		return program;
 	}
 

@@ -36,30 +36,19 @@ public class CategoryController {
 	public ResponseEntity<CategoryDto> createOrUpdate(@RequestBody @Valid CategoryForm categoryForm) {
 		logger.info("Create category");
 		Category category = mapper(categoryForm);
-		try {
-			CategoryDto result = categoryService.createOrUpdate(category);
-			logger.info("Category created: {}", result);
-			return ResponseEntity.ok(result);
-		} catch (Exception e) {
-			logger.error(e);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-		}
+		CategoryDto result = categoryService.createOrUpdate(category);
+		logger.info("Category created: {}", result);
+		return ResponseEntity.ok(result);
 	}
 
 	@PostMapping(path = "/get-all")
 	public ResponseEntity<List<CategoryDto>> getAll(@RequestBody CategoryForm categoryForm) {
-		try {
-			if (Utils.CACHE_MAP.get(CATEGORY_LIST_KEY) == null) {
-				List<CategoryDto> result = categoryService.getAll();
-				Utils.CACHE_MAP.put(CATEGORY_LIST_KEY, result);
-				return ResponseEntity.ok(result);
-			} else {
-				return ResponseEntity.ok((List<CategoryDto>) Utils.CACHE_MAP.get(CATEGORY_LIST_KEY));
-			}
-
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		if (Utils.CACHE_MAP.get(CATEGORY_LIST_KEY) == null) {
+			List<CategoryDto> result = categoryService.getAll();
+			Utils.CACHE_MAP.put(CATEGORY_LIST_KEY, result);
+			return ResponseEntity.ok(result);
+		} else {
+			return ResponseEntity.ok((List<CategoryDto>) Utils.CACHE_MAP.get(CATEGORY_LIST_KEY));
 		}
 	}
 
