@@ -133,6 +133,15 @@ public class ProgramService {
 		form.setSortDirection("DESC");
 		return this.search(form).getContent();
 	}
+	public List<ProgramDto> getBroadCastingPrograms(){
+		ProgramForm form = new ProgramForm();
+		form.setPage(1);
+		form.setLimit(8);
+		form.setSortBy("rank");
+		form.setSortDirection("DESC");
+		form.setIsBroadCasting(true);
+		return this.search(form).getContent();
+	}
 
 	Program mapper(ProgramDto programDto) {
 		if (programDto == null) {

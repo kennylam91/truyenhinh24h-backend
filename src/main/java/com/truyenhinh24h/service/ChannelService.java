@@ -29,7 +29,7 @@ public class ChannelService {
 	@Autowired CacheManager cacheManager;
 
 	@CachePut(cacheNames = {"channels"}, key = "#result.id")
-	@CacheEvict(cacheNames = {"all-channels"}, allEntries = true)
+	@CacheEvict(cacheNames = {"all-channels", "programs-by-time"}, allEntries = true)
 	public ChannelDto createOrUpdate(Channel channel) {
 		Channel result = null;
 		if (channel.getId() == null) {
@@ -47,6 +47,7 @@ public class ChannelService {
 			cacheManager.getCache("channels").evictIfPresent(id);
 		}
 		cacheManager.getCache("all-channels").clear();
+		cacheManager.getCache("programs-by-time").clear();
 	}
 	
 	@Cacheable(cacheNames = {"all-channels"})
