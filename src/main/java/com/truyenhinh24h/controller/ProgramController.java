@@ -101,6 +101,11 @@ public class ProgramController {
 //		return ResponseEntity.ok(programDtoPage);
 //	}
 	
+	@PostMapping(path = "/now")
+	public ResponseEntity<List<ProgramDto>> getBroadCastingPrograms(){
+		return ResponseEntity.ok(programService.getBroadCastingPrograms());
+	}
+	
 	@PostMapping(path = "/today")
 	public ResponseEntity<List<ProgramDto>> getTonightPrograms(@RequestBody ProgramForm form){
 		if (!form.isStartTimeFilterValid()) {

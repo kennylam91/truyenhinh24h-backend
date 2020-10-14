@@ -116,7 +116,7 @@ public class ProgramService {
 		}
 	}
 	
-	@Cacheable(cacheNames = {"all-programs"}, key = "{#form.getStartTimeFrom(), #form.getStartTimeTo()}")
+	@Cacheable(cacheNames = {"programs-by-time"}, key = "{#form.getStartTimeFrom(), #form.getStartTimeTo()}")
 	public List<ProgramDto> getTodayPrograms(ProgramForm form) {
 		form.setPage(1);
 		form.setLimit(8);
@@ -125,12 +125,21 @@ public class ProgramService {
 		return this.search(form).getContent();
 	}
 	
-	@Cacheable(cacheNames = {"all-programs"}, key = "{#form.getStartTimeFrom(), #form.getStartTimeTo()}")
+	@Cacheable(cacheNames = {"programs-by-time"}, key = "{#form.getStartTimeFrom(), #form.getStartTimeTo()}")
 	public List<ProgramDto> getTomorrowPrograms(ProgramForm form) {
 		form.setPage(1);
 		form.setLimit(8);
 		form.setSortBy("rank");
 		form.setSortDirection("DESC");
+		return this.search(form).getContent();
+	}
+	public List<ProgramDto> getBroadCastingPrograms(){
+		ProgramForm form = new ProgramForm();
+		form.setPage(1);
+		form.setLimit(8);
+		form.setSortBy("rank");
+		form.setSortDirection("DESC");
+		form.setIsBroadCasting(true);
 		return this.search(form).getContent();
 	}
 
