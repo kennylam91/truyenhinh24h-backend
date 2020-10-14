@@ -119,7 +119,6 @@ public class ProgramService {
 		return program;
 	}
 
-	@CacheEvict(cacheNames = {"all-programs"}, allEntries = true)
 	@Transactional
 	public void importMulti(List<Program> programs) {
 		for (Program program : programs) {

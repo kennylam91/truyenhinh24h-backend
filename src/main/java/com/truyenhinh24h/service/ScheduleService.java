@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -25,14 +27,13 @@ import com.truyenhinh24h.model.ScheduleDto;
 @Service
 public class ScheduleService {
 
-	private static final Logger logger = LogManager.getLogger(ScheduleService.class);
-
 	@Autowired
 	private ScheduleRepository scheduleRepository;
 
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 
+	@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true)
 	public ScheduleDto createOrUpdate(Schedule schedule) {
 		Schedule result = null;
 		if (schedule.getId() == null) {
@@ -44,6 +45,7 @@ public class ScheduleService {
 		return mapper(result);
 	}
 
+	@Cacheable(cacheNames = {"all-schedules"})
 	public Page<ScheduleDto> search(ScheduleForm scheduleForm) {
 		Pageable pageable = PageRequest.of(scheduleForm.getPage() - 1, scheduleForm.getLimit(),
 				Sort.by(Sort.Direction.ASC, "startTime"));
@@ -59,6 +61,7 @@ public class ScheduleService {
 	}
 
 	@Transactional
+	@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true)
 	public void importMulti(List<Schedule> schedules) {
 		for (Schedule schedule : schedules) {
 			if (schedule.getId() == null) {
@@ -98,6 +101,7 @@ public class ScheduleService {
 		return schedule;
 	}
 
+	@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true)
 	public void deleteMulti(List<Long> scheduleIds) {
 		scheduleRepository.deleteByIdIn(scheduleIds);
 
