@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +39,8 @@ public class ProgramService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 
+	@CachePut(cacheNames = {"programs"}, key = "#result.id")
+	@CacheEvict(cacheNames = {"all-programs"}, allEntries = true)
 	public ProgramDto createOrUpdate(Program program) {
 		Program result = null;
 		if (program.getId() == null) {
@@ -51,6 +56,7 @@ public class ProgramService {
 		programRepository.deleteByIdIn(ids);
 	}
 
+	@Cacheable(cacheNames = {"programs"}, key = "#id")
 	public ProgramDto findById(Long id) {
 		Optional<Program> optional = programRepository.findById(id);
 		if (optional.isPresent()) {
@@ -62,6 +68,7 @@ public class ProgramService {
 		}
 	}
 
+	@Cacheable(cacheNames = {"all-programs"})
 	public Page<ProgramDto> getAll(Pageable pageable) {
 		Page<Program> programPage = programRepository.findAll(pageable);
 		List<ProgramDto> programDtoList = Collections.emptyList();
@@ -112,6 +119,7 @@ public class ProgramService {
 		return program;
 	}
 
+	@CacheEvict(cacheNames = {"all-programs"}, allEntries = true)
 	@Transactional
 	public void importMulti(List<Program> programs) {
 		for (Program program : programs) {

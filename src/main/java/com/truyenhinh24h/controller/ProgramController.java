@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -63,23 +64,6 @@ public class ProgramController {
 		logger.info("Program created: {}", result);
 		return ResponseEntity.ok(result);
 	}
-	
-//	@GetMapping(path = "/update-db")
-	public void updateDb() {
-		List<Program> programs = programRepository.findAll();
-		for (Program program : programs) {
-			if(!program.getName().contentEquals(program.getEnName())) {
-				String onlyTextName = program.getName().replaceAll(Utils.SYMBOL_REGEX, "") + " " +
-						program.getEnName().replaceAll(Utils.SYMBOL_REGEX, "");
-				program.setOnlyTextName(onlyTextName);
-			} else {
-				program.setOnlyTextName(program.getName());
-			}
-			
-			programRepository.save(program);
-		}
-		
-	}
 
 	@PostMapping(path = "/delete-multi")
 	public ResponseEntity<Void> deleteMulti(@RequestBody ProgramForm programForm) {
@@ -88,6 +72,7 @@ public class ProgramController {
 		return ResponseEntity.ok().build();
 	}
 
+	
 	@GetMapping(path = "/{programId}")
 	public ResponseEntity<ProgramDto> getDetail(@PathVariable Long programId, HttpServletRequest request) {
 		AccessLog log = new AccessLog();
@@ -154,6 +139,23 @@ public class ProgramController {
 		List<Program> programs = forms.stream().map(this::mapper).collect(Collectors.toList());
 		programService.importMulti(programs);
 		return ResponseEntity.ok().build();
+	}
+	
+//	@GetMapping(path = "/update-db")
+	public void updateDb() {
+		List<Program> programs = programRepository.findAll();
+		for (Program program : programs) {
+			if(!program.getName().contentEquals(program.getEnName())) {
+				String onlyTextName = program.getName().replaceAll(Utils.SYMBOL_REGEX, "") + " " +
+						program.getEnName().replaceAll(Utils.SYMBOL_REGEX, "");
+				program.setOnlyTextName(onlyTextName);
+			} else {
+				program.setOnlyTextName(program.getName());
+			}
+			
+			programRepository.save(program);
+		}
+		
 	}
 
 	private Program mapper(ProgramForm data) {
