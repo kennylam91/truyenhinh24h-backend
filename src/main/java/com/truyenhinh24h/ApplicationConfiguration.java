@@ -1,6 +1,7 @@
 package com.truyenhinh24h;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -15,6 +16,8 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
+
+@EnableCaching
 @Configuration
 public class ApplicationConfiguration extends AbstractMongoClientConfiguration {
 

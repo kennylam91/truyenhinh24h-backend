@@ -7,6 +7,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +23,7 @@ import com.truyenhinh24h.dao.StatsData;
 import com.truyenhinh24h.model.ChannelDto;
 import com.truyenhinh24h.model.Channel;
 
+@CacheConfig(cacheNames = {"channels"})
 @Service
 public class ChannelService {
 	
@@ -26,7 +32,11 @@ public class ChannelService {
 	
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
+	
+	@Autowired CacheManager cacheManager;
 
+	@CachePut(cacheNames = {"channels"}, key = "#result.id")
+	@CacheEvict(cacheNames = {"all-channels"}, allEntries = true)
 	public ChannelDto createOrUpdate(Channel channel) {
 		Channel result = null;
 		if (channel.getId() == null) {
@@ -36,11 +46,25 @@ public class ChannelService {
 			result = channelRepository.save(channel);
 		}
 		return mapper(result);
-
 	}
 	
 	public void deleteMulti(Long[] ids) {
 		channelRepository.deleteByIdIn(ids);
+		for (Long id : ids) {
+			cacheManager.getCache("channels").evictIfPresent(id);
+		}
+		cacheManager.getCache("all-channels").clear();
+	}
+	
+	@Cacheable(cacheNames = {"all-channels"})
+	public List<ChannelDto> getAll(){
+		return channelRepository.findAll().stream().map(this::mapper).collect(Collectors.toList());
+	}
+
+	@Cacheable(cacheNames = {"channels"}, key = "#channelId")
+	public ChannelDto findById(Long channelId) {
+		Optional<Channel> optional = channelRepository.findById(channelId);
+		return optional.isPresent() ? mapper(optional.get()) : null;
 	}
 	
 	Channel mapper(ChannelDto channel) {
@@ -69,21 +93,6 @@ public class ChannelService {
 		channelDto.setNetworkId(channel.getNetworkId());
 		channelDto.setVip(channel.isVip());
 		return channelDto;
-	}
-
-	public List<ChannelDto> getAll(){
-		return channelRepository.findAll().stream().map(this::mapper).collect(Collectors.toList())
-				;
-		
-	}
-
-	public ChannelDto findById(Long channelId) {
-		Optional<Channel> optional = channelRepository.findById(channelId);
-		if (optional.isPresent()) {
-			return mapper(optional.get());
-		} else {
-			return null;
-		}
 	}
 
 

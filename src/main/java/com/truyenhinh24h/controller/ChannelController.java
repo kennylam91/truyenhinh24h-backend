@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,7 +51,7 @@ public class ChannelController {
 		logger.info("Create channel");
 		Channel channel = mapper(channelForm);
 		ChannelDto channelDto = channelService.createOrUpdate(channel);
-		Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
+//		Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
 		logger.info("Channel created: {}", channelDto);
 		return ResponseEntity.ok(channelDto);
 	}
@@ -59,12 +60,12 @@ public class ChannelController {
 	public ResponseEntity<Void> deleteMulti(@RequestBody ChannelForm channelForm) {
 		channelService.deleteMulti(channelForm.getChannelIds());
 		logger.info("Deleted Channel: {}", channelForm.getChannelIds().toString());
-		Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
+//		Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
 		return ResponseEntity.ok().build();
 	}
 
 	@PostMapping(path = "/get-all")
-	public ResponseEntity<List<ChannelDto>> getAll(@RequestBody ChannelForm channelForm, HttpServletRequest request) {
+	public ResponseEntity<List<ChannelDto>> getAll(HttpServletRequest request) {
 		AccessLog log = new AccessLog();
 		log.setCreatedAt(new Date());
 		log.setEndPoint("/channels/get-all");
@@ -72,13 +73,15 @@ public class ChannelController {
 		log.setMethod(HttpMethod.POST);
 		logService.createOrUpdate(log);
 
-		if (Utils.CACHE_MAP.get(CHANNEL_LIST_KEY) == null) {
-			List<ChannelDto> result = channelService.getAll();
-			Utils.CACHE_MAP.put(CHANNEL_LIST_KEY, result);
-			return ResponseEntity.ok(result);
-		} else {
-			return ResponseEntity.ok((List<ChannelDto>) Utils.CACHE_MAP.get(CHANNEL_LIST_KEY));
-		}
+		List<ChannelDto> result = channelService.getAll();
+		return ResponseEntity.ok(result);
+//		if (Utils.CACHE_MAP.get(CHANNEL_LIST_KEY) == null) {
+//			List<ChannelDto> result = channelService.getAll();
+//			Utils.CACHE_MAP.put(CHANNEL_LIST_KEY, result);
+//			return ResponseEntity.ok(result);
+//		} else {
+//			return ResponseEntity.ok((List<ChannelDto>) Utils.CACHE_MAP.get(CHANNEL_LIST_KEY));
+//		}
 	}
 
 	@GetMapping(path = "/{channelId}")
