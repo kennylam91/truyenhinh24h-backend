@@ -9,13 +9,7 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.truyenhinh24h.common.Utils;
-import com.truyenhinh24h.dao.StatsData;
 import com.truyenhinh24h.model.AccessLog;
 import com.truyenhinh24h.model.Channel;
 import com.truyenhinh24h.model.ChannelDto;
@@ -35,8 +28,6 @@ import com.truyenhinh24h.service.ChannelService;
 @RestController
 @RequestMapping("/rest/v1/channels")
 public class ChannelController {
-
-	private static final String CHANNEL_LIST_KEY = "channelList";
 
 	private static final Logger logger = LogManager.getLogger(ChannelController.class);
 
@@ -51,7 +42,6 @@ public class ChannelController {
 		logger.info("Create channel");
 		Channel channel = mapper(channelForm);
 		ChannelDto channelDto = channelService.createOrUpdate(channel);
-//		Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
 		logger.info("Channel created: {}", channelDto);
 		return ResponseEntity.ok(channelDto);
 	}
@@ -60,7 +50,6 @@ public class ChannelController {
 	public ResponseEntity<Void> deleteMulti(@RequestBody ChannelForm channelForm) {
 		channelService.deleteMulti(channelForm.getChannelIds());
 		logger.info("Deleted Channel: {}", channelForm.getChannelIds().toString());
-//		Utils.CACHE_MAP.remove(CHANNEL_LIST_KEY);
 		return ResponseEntity.ok().build();
 	}
 
@@ -75,13 +64,6 @@ public class ChannelController {
 
 		List<ChannelDto> result = channelService.getAll();
 		return ResponseEntity.ok(result);
-//		if (Utils.CACHE_MAP.get(CHANNEL_LIST_KEY) == null) {
-//			List<ChannelDto> result = channelService.getAll();
-//			Utils.CACHE_MAP.put(CHANNEL_LIST_KEY, result);
-//			return ResponseEntity.ok(result);
-//		} else {
-//			return ResponseEntity.ok((List<ChannelDto>) Utils.CACHE_MAP.get(CHANNEL_LIST_KEY));
-//		}
 	}
 
 	@GetMapping(path = "/{channelId}")

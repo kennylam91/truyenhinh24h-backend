@@ -1,7 +1,5 @@
 package com.truyenhinh24h.service;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,14 +10,9 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.truyenhinh24h.controller.ChannelForm;
 import com.truyenhinh24h.dao.ChannelRepository;
-import com.truyenhinh24h.dao.StatsData;
 import com.truyenhinh24h.model.ChannelDto;
 import com.truyenhinh24h.model.Channel;
 
