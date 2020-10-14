@@ -85,24 +85,32 @@ public class ProgramController {
 		return ResponseEntity.ok(programDto);
 	}
 
+//	@PostMapping(path = "/today")
+//	public ResponseEntity<Page<ProgramDto>> getTodayPrograms(@RequestBody ProgramForm form,
+//			HttpServletRequest request) {
+//		if (!form.isStartTimeFilterValid()) {
+//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//		}
+//		AccessLog log = new AccessLog();
+//		log.setCreatedAt(new Date());
+//		log.setEndPoint("/programs/today");
+//		log.setIp(Utils.getClientIpAddress(request));
+//		log.setMethod(HttpMethod.POST);
+//		accessLogService.createOrUpdate(log);
+//		Page<ProgramDto> programDtoPage = programService.search(form);
+//		return ResponseEntity.ok(programDtoPage);
+//	}
+	
 	@PostMapping(path = "/today")
-	public ResponseEntity<Page<ProgramDto>> getTodayPrograms(@RequestBody ProgramForm form,
-			HttpServletRequest request) {
+	public ResponseEntity<List<ProgramDto>> getTonightPrograms(@RequestBody ProgramForm form){
 		if (!form.isStartTimeFilterValid()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
-		AccessLog log = new AccessLog();
-		log.setCreatedAt(new Date());
-		log.setEndPoint("/programs/today");
-		log.setIp(Utils.getClientIpAddress(request));
-		log.setMethod(HttpMethod.POST);
-		accessLogService.createOrUpdate(log);
-		Page<ProgramDto> programDtoPage = programService.search(form);
-		return ResponseEntity.ok(programDtoPage);
+		return ResponseEntity.ok(programService.getTodayPrograms(form));
 	}
 
 	@PostMapping(path = "/tomorrow")
-	public ResponseEntity<Page<ProgramDto>> getTomorrowPrograms(@RequestBody ProgramForm form,
+	public ResponseEntity<List<ProgramDto>> getTomorrowPrograms(@RequestBody ProgramForm form,
 			HttpServletRequest request) {
 		if (!form.isStartTimeFilterValid()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -113,7 +121,7 @@ public class ProgramController {
 		log.setIp(Utils.getClientIpAddress(request));
 		log.setMethod(HttpMethod.POST);
 		accessLogService.createOrUpdate(log);
-		Page<ProgramDto> programDtoPage = programService.search(form);
+		List<ProgramDto> programDtoPage = programService.getTomorrowPrograms(form);
 		return ResponseEntity.ok(programDtoPage);
 	}
 

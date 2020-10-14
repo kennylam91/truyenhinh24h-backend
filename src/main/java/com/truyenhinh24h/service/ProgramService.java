@@ -1,8 +1,16 @@
 package com.truyenhinh24h.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.truyenhinh24h.controller.ProgramForm;
 import com.truyenhinh24h.dao.CategoryRepository;
 import com.truyenhinh24h.dao.ProgramRepository;
+import com.truyenhinh24h.model.Category;
+import com.truyenhinh24h.model.CategoryDto;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
 
@@ -35,6 +45,9 @@ public class ProgramService {
 
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	@Autowired
+	private CategoryService categoryService;
 
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
@@ -86,7 +99,8 @@ public class ProgramService {
 	public Page<ProgramDto> search(ProgramForm programForm) {
 		Sort sort = Sort.by(Sort.Direction.ASC, "name");
 		if (programForm.getSortBy() != null) {
-			sort = Sort.by(programForm.getSortDirectionObj(), programForm.getSortBy());
+			sort = Sort.by(programForm.getSortDirectionObj(), programForm.getSortBy())
+					.and(Sort.by("logo").descending());
 		}
 		Pageable pageable = PageRequest.of(programForm.getPage() - 1, programForm.getLimit(), sort);
 		Page<ProgramDto> programDtoPage = null;
@@ -96,10 +110,28 @@ public class ProgramService {
 		} else {
 			List<ProgramDto> programDtoList = programDtoPage.getContent();
 			for (ProgramDto programDto : programDtoList) {
-				programDto.setCategories(categoryRepository.findByCodeIn(programDto.getCategoryCodes()));
+				programDto.setCategories(this.findCategoryList(Arrays.asList(programDto.getCategoryCodes())));
 			}
 			return new PageImpl<>(programDtoList, pageable, programDtoPage.getTotalElements());
 		}
+	}
+	
+	@Cacheable(cacheNames = {"all-programs"}, key = "{#form.getStartTimeFrom(), #form.getStartTimeTo()}")
+	public List<ProgramDto> getTodayPrograms(ProgramForm form) {
+		form.setPage(1);
+		form.setLimit(8);
+		form.setSortBy("rank");
+		form.setSortDirection("DESC");
+		return this.search(form).getContent();
+	}
+	
+	@Cacheable(cacheNames = {"all-programs"}, key = "{#form.getStartTimeFrom(), #form.getStartTimeTo()}")
+	public List<ProgramDto> getTomorrowPrograms(ProgramForm form) {
+		form.setPage(1);
+		form.setLimit(8);
+		form.setSortBy("rank");
+		form.setSortDirection("DESC");
+		return this.search(form).getContent();
 	}
 
 	Program mapper(ProgramDto programDto) {
@@ -128,5 +160,26 @@ public class ProgramService {
 			programRepository.save(program);
 		}
 
+	}
+
+	
+	
+	private Set<Category> findCategoryList(List<Long> categoryCodes){
+		if(categoryCodes.isEmpty()) {
+			return Collections.emptySet();
+		}else {
+			List<CategoryDto> categoryDtoList = categoryService.getAll();
+			Set<Category> result = new HashSet<>();
+			for (Long code : categoryCodes) {
+				CategoryDto found = categoryDtoList.stream()
+						.filter(item -> Objects.equals(item.getCode(), code))
+						.findFirst().orElse(null);
+				if(found != null) {
+					result.add(categoryService.mapper(found));
+				}
+			}
+			return result;
+			
+		}
 	}
 }
