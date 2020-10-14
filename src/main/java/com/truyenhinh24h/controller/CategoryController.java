@@ -25,8 +25,6 @@ import com.truyenhinh24h.service.CategoryService;
 @CrossOrigin(origins = { "http://localhost:3000", "https://truyenhinh24h.live" })
 public class CategoryController {
 
-	private static final String CATEGORY_LIST_KEY = "categoryList";
-
 	private static final Logger logger = LogManager.getLogger(CategoryController.class);
 
 	@Autowired
@@ -43,13 +41,8 @@ public class CategoryController {
 
 	@PostMapping(path = "/get-all")
 	public ResponseEntity<List<CategoryDto>> getAll(@RequestBody CategoryForm categoryForm) {
-		if (Utils.CACHE_MAP.get(CATEGORY_LIST_KEY) == null) {
-			List<CategoryDto> result = categoryService.getAll();
-			Utils.CACHE_MAP.put(CATEGORY_LIST_KEY, result);
-			return ResponseEntity.ok(result);
-		} else {
-			return ResponseEntity.ok((List<CategoryDto>) Utils.CACHE_MAP.get(CATEGORY_LIST_KEY));
-		}
+		List<CategoryDto> result = categoryService.getAll();
+		return ResponseEntity.ok(result);
 	}
 
 	private Category mapper(CategoryForm data) {

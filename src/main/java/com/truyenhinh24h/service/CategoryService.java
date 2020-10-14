@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.truyenhinh24h.dao.CategoryRepository;
@@ -20,6 +22,7 @@ public class CategoryService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 	
+	@CacheEvict(cacheNames = {"all-categories"}, allEntries = true)
 	public CategoryDto createOrUpdate(Category category) {
 		Category result = null;
 		if(category.getId() == null) {
@@ -31,6 +34,7 @@ public class CategoryService {
 		return mapper(result);
 	}
 	
+	@Cacheable(cacheNames = {"all-categories"})
 	public List<CategoryDto> getAll(){
 		List<Category> categoryList = categoryRepository.findAll();
 		if(!categoryList.isEmpty()) {
