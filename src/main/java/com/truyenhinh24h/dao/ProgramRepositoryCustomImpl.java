@@ -32,19 +32,16 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 	@Override
 	public Page<ProgramDto> search(ProgramForm programForm, Pageable pageable) {
 		final Query query = new Query();
-		if (programForm.getSearchName() != null) {
-//			Criteria nameCriteria = where("name").regex(programForm.getSearchName());
-//			Criteria enNameCriterial = where("enName").regex(programForm.getSearchName());
-//			query.addCriteria(new Criteria().orOperator(nameCriteria, enNameCriterial));
+		if (programForm.getSearchName() != null && programForm.getSearchName().length() >=3) {
 			query.addCriteria(where("onlyTextName")
 					.regex(programForm.getSearchName().replaceAll(Utils.SYMBOL_REGEX, "")));
 		}
-		if (programForm.getCategoryCodes() != null) {
+		if (programForm.getCategoryCodes() != null && programForm.getCategoryCodes().length > 0) {
 			Criteria categoryCriteria = where("categoryCodes")
 					.elemMatch(new Criteria().in(Arrays.asList(programForm.getCategoryCodes())));
 			query.addCriteria(categoryCriteria);
 		}
-		if (programForm.getRanks() != null) {
+		if (programForm.getRanks() != null && !programForm.getRanks().isEmpty()) {
 			query.addCriteria(where("rank").in(programForm.getRanks()));
 		}
 		Query scheduleQuery = new Query();
