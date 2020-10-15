@@ -52,16 +52,12 @@ public class ChannelController {
 		logger.info("Deleted Channel: {}", channelForm.getChannelIds().toString());
 		return ResponseEntity.ok().build();
 	}
+	
+	
+	
 
 	@PostMapping(path = "/get-all")
-	public ResponseEntity<List<ChannelDto>> getAll(HttpServletRequest request) {
-		AccessLog log = new AccessLog();
-		log.setCreatedAt(new Date());
-		log.setEndPoint("/channels/get-all");
-		log.setIp(Utils.getClientIpAddress(request));
-		log.setMethod(HttpMethod.POST);
-		logService.createOrUpdate(log);
-
+	public ResponseEntity<List<ChannelDto>> getAll() {
 		List<ChannelDto> result = channelService.getAll();
 		return ResponseEntity.ok(result);
 	}
