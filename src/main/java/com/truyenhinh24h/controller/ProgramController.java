@@ -120,12 +120,12 @@ public class ProgramController {
 		if (!form.isStartTimeFilterValid()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
-		AccessLog log = new AccessLog();
-		log.setCreatedAt(new Date());
-		log.setEndPoint("/programs/tomorrow");
-		log.setIp(Utils.getClientIpAddress(request));
-		log.setMethod(HttpMethod.POST);
-		accessLogService.createOrUpdate(log);
+//		AccessLog log = new AccessLog();
+//		log.setCreatedAt(new Date());
+//		log.setEndPoint("/programs/tomorrow");
+//		log.setIp(Utils.getClientIpAddress(request));
+//		log.setMethod(HttpMethod.POST);
+//		accessLogService.createOrUpdate(log);
 		List<ProgramDto> programDtoPage = programService.getTomorrowPrograms(form);
 		return ResponseEntity.ok(programDtoPage);
 	}
