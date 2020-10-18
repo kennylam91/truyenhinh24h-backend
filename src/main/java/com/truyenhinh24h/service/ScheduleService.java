@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +34,10 @@ public class ScheduleService {
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
 
-	@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true)
+	@Caching(evict = {
+			@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true),
+			@CacheEvict(cacheNames = {"programs-by-time"}, allEntries = true)
+	})
 	public ScheduleDto createOrUpdate(Schedule schedule) {
 		Schedule result = null;
 		if (schedule.getId() == null) {
@@ -61,7 +65,10 @@ public class ScheduleService {
 	}
 
 	@Transactional
-	@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true)
+	@Caching(evict = {
+			@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true),
+			@CacheEvict(cacheNames = {"programs-by-time"}, allEntries = true)
+	})
 	public void importMulti(List<Schedule> schedules) {
 		for (Schedule schedule : schedules) {
 			if (schedule.getId() == null) {
@@ -101,7 +108,10 @@ public class ScheduleService {
 		return schedule;
 	}
 
-	@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true)
+	@Caching(evict = {
+			@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true),
+			@CacheEvict(cacheNames = {"programs-by-time"}, allEntries = true)
+	})
 	public void deleteMulti(List<Long> scheduleIds) {
 		scheduleRepository.deleteByIdIn(scheduleIds);
 
