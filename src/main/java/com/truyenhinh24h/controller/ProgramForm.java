@@ -55,7 +55,7 @@ public class ProgramForm extends BaseForm {
 	private Date startTimeTo;
 
 	// Dung de search cac program dang chieu
-	private Boolean isBroadCasting;
+	private Boolean isBroadCasting = false;
 
 	public boolean isStartTimeFilterValid() {
 		return ((startTimeFrom != null) && (startTimeTo != null)) || 

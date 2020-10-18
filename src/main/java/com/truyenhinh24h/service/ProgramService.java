@@ -117,7 +117,7 @@ public class ProgramService {
 	}
 	
 	@Cacheable(cacheNames = {"programs-by-time"}, 
-			key = "{#form.getStartTimeFrom(), #form.getStartTimeTo(), #form.getLimit()}")
+			key = "{#form.getStartTimeFrom(), #form.getStartTimeTo(), #form.getLimit()}", condition = "#form.getIsBroadCasting() == false")
 	public List<ProgramDto> findProgramsForClient(ProgramForm form) {
 		form.setPage(1);
 		form.setSortBy("rank");
