@@ -100,7 +100,7 @@ public class ProgramService {
 		Sort sort = Sort.by(Sort.Direction.ASC, "name");
 		if (programForm.getSortBy() != null) {
 			sort = Sort.by(programForm.getSortDirectionObj(), programForm.getSortBy())
-					.and(Sort.by("logo").descending());
+					.and(Sort.by("year").descending());
 		}
 		Pageable pageable = PageRequest.of(programForm.getPage() - 1, programForm.getLimit(), sort);
 		Page<ProgramDto> programDtoPage = null;
@@ -116,23 +116,15 @@ public class ProgramService {
 		}
 	}
 	
-	@Cacheable(cacheNames = {"programs-by-time"}, key = "{#form.getStartTimeFrom(), #form.getStartTimeTo()}")
-	public List<ProgramDto> getTodayPrograms(ProgramForm form) {
+	@Cacheable(cacheNames = {"programs-by-time"}, 
+			key = "{#form.getStartTimeFrom(), #form.getStartTimeTo(), #form.getLimit()}")
+	public List<ProgramDto> findProgramsForClient(ProgramForm form) {
 		form.setPage(1);
-		form.setLimit(8);
 		form.setSortBy("rank");
 		form.setSortDirection("DESC");
 		return this.search(form).getContent();
 	}
 	
-	@Cacheable(cacheNames = {"programs-by-time"}, key = "{#form.getStartTimeFrom(), #form.getStartTimeTo()}")
-	public List<ProgramDto> getTomorrowPrograms(ProgramForm form) {
-		form.setPage(1);
-		form.setLimit(8);
-		form.setSortBy("rank");
-		form.setSortDirection("DESC");
-		return this.search(form).getContent();
-	}
 	public List<ProgramDto> getBroadCastingPrograms(){
 		ProgramForm form = new ProgramForm();
 		form.setPage(1);

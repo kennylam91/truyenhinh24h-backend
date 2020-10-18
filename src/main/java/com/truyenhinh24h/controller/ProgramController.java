@@ -111,7 +111,7 @@ public class ProgramController {
 		if (!form.isStartTimeFilterValid()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
-		return ResponseEntity.ok(programService.getTodayPrograms(form));
+		return ResponseEntity.ok(programService.findProgramsForClient(form));
 	}
 
 	@PostMapping(path = "/tomorrow")
@@ -120,13 +120,7 @@ public class ProgramController {
 		if (!form.isStartTimeFilterValid()) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
-//		AccessLog log = new AccessLog();
-//		log.setCreatedAt(new Date());
-//		log.setEndPoint("/programs/tomorrow");
-//		log.setIp(Utils.getClientIpAddress(request));
-//		log.setMethod(HttpMethod.POST);
-//		accessLogService.createOrUpdate(log);
-		List<ProgramDto> programDtoPage = programService.getTomorrowPrograms(form);
+		List<ProgramDto> programDtoPage = programService.findProgramsForClient(form);
 		return ResponseEntity.ok(programDtoPage);
 	}
 
