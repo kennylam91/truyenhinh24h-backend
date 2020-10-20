@@ -40,6 +40,8 @@ public class ScheduleForm extends BaseForm {
 
 	private Date startTimeTo;
 
+	private String updateDate;
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

@@ -1,6 +1,10 @@
 package com.truyenhinh24h.controller;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +12,9 @@ import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,8 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.truyenhinh24h.dao.StatsData;
+import com.truyenhinh24h.model.ChannelDto;
 import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.model.ScheduleDto;
+import com.truyenhinh24h.service.ChannelService;
 import com.truyenhinh24h.service.ScheduleService;
 
 @RestController
@@ -30,6 +39,9 @@ public class ScheduleController {
 
 	@Autowired
 	private ScheduleService scheduleService;
+	
+	@Autowired
+	private ChannelService channelService;
 
 	@PostMapping
 	public ResponseEntity<ScheduleDto> createOrUpdate(@Valid @RequestBody ScheduleForm scheduleForm) {
@@ -44,6 +56,54 @@ public class ScheduleController {
 	public ResponseEntity<Void> importMulti(@Valid @RequestBody List<ScheduleForm> forms) {
 		List<Schedule> schedules = forms.stream().map(this::mapper).collect(Collectors.toList());
 		scheduleService.importMulti(schedules);
+		return ResponseEntity.ok().build();
+	}
+	
+	@PostMapping(path ="/auto-update")
+	public ResponseEntity<Void> autoUpdateSchedules(@RequestBody ScheduleForm form) throws Exception {
+		String url = "";
+		if(form.getChannelName().contains("THVL")) {
+			url = "https://www.thvl.vn/lich-phat-song/?ngay="+ form.getUpdateDate() + "&kenh=" + form.getChannelName();
+		}
+		Document doc = Jsoup.connect(url).get();
+		Elements startTimeElements = doc.select(".time");
+		Elements programElements = doc.select(".program");
+		List<String> startTimes = startTimeElements.stream().map(e -> e.ownText()).collect(Collectors.toList());
+		List<String> programs = programElements.stream().map(e -> e.ownText()).collect(Collectors.toList());
+		List<Schedule> scheduleList = new ArrayList<>();
+		for (int i = 0; i< startTimes.size(); i++) {
+			String timeString = startTimes.get(i);
+			String[] timeArr = timeString.split(":");
+			String[] dateArr = form.getUpdateDate().split("-");
+			if(timeArr.length >=2 && dateArr.length >= 3) {
+				Calendar scheduleTime = Calendar.getInstance();
+				scheduleTime.setTimeZone(TimeZone.getTimeZone("GMT+7"));
+				scheduleTime.set(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]), 
+						Integer.parseInt(dateArr[2]), Integer.parseInt(timeArr[0]), Integer.parseInt(timeArr[1]));
+				Schedule schedule = new Schedule();
+				List<ChannelDto> channelDtoList = channelService.getAll();
+				ChannelDto foundChannelDto = channelDtoList.stream()
+						.filter(c -> c.getName().equalsIgnoreCase(form.getChannelName())).findFirst().orElse(null);
+				if(foundChannelDto != null) {
+					schedule.setChannelId(foundChannelDto.getId());
+					schedule.setChannelName(foundChannelDto.getName());
+					schedule.setProgramName(programs.get(i));
+					schedule.setStartTime(scheduleTime.getTime());
+					if(i>= 1) {
+						scheduleList.get(i-1).setEndTime(scheduleTime.getTime());
+					}
+					if(i == startTimes.size() -1 ) {
+						Calendar endOfDay = Calendar.getInstance();
+						endOfDay.setTimeZone(TimeZone.getTimeZone("GMT+7"));
+						endOfDay.set(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]), 
+								Integer.parseInt(dateArr[2]), 24, 0);
+						schedule.setEndTime(endOfDay.getTime());
+					}
+					scheduleList.add(schedule);
+				}
+			}
+		}
+		scheduleService.importMulti(scheduleList);
 		return ResponseEntity.ok().build();
 	}
 
