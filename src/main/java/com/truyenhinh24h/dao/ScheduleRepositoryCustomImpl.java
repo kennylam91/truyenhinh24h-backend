@@ -26,6 +26,8 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 	@Override
 	public Page<Schedule> search(ScheduleForm scheduleForm, Pageable pageable) {
 		final Query query = new Query();
+		Criteria timeCriteria = new Criteria().andOperator(where("startTime").gte(scheduleForm.getStartTime()),
+				where("startTime").lte(scheduleForm.getEndTime()));
 		if (scheduleForm != null) {
 			if (scheduleForm.getChannelId() != null) {
 				query.addCriteria(where("channelId").is(scheduleForm.getChannelId()));
@@ -34,11 +36,10 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 				query.addCriteria(where("programId").is(scheduleForm.getProgramId()));
 			}
 			if (scheduleForm.getStartTime() != null && scheduleForm.getEndTime() != null) {
-				query.addCriteria(where("startTime").gte(scheduleForm.getStartTime())
-					 .andOperator(where("startTime").lte(scheduleForm.getEndTime())));
+				query.addCriteria(timeCriteria);
 			}
 		}
-		query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
+		query.with(pageable);
 		List<Schedule> schedules = mongoTemplate.find(query, Schedule.class);
 		long total = mongoTemplate.count(query, Schedule.class);
 		return new PageImpl<>(schedules, pageable, total);
