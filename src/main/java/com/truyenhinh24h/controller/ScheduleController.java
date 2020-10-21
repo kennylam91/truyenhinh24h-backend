@@ -128,6 +128,12 @@ public class ScheduleController {
 	public ResponseEntity<List<StatsData>> getScheduleStats(@RequestBody ScheduleForm form) {
 		return ResponseEntity.ok(scheduleService.getScheduleStats(form));
 	}
+	
+	@PostMapping(path = "/clear-cache")
+	public ResponseEntity<Void> clearScheduleCache(){
+		scheduleService.clearCache();
+		return ResponseEntity.ok().build();
+	}
 
 	private Schedule mapper(ScheduleForm data) {
 		if (data == null) {

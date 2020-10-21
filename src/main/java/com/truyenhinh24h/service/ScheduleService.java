@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -33,6 +34,9 @@ public class ScheduleService {
 
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
+	
+	@Autowired
+	private CacheManager cacheManager;
 
 	@Caching(evict = {
 			@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true),
@@ -77,6 +81,24 @@ public class ScheduleService {
 			scheduleRepository.save(schedule);
 		}
 	}
+	
+	@Caching(evict = {
+			@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true),
+			@CacheEvict(cacheNames = {"programs-by-time"}, allEntries = true)
+	})
+	public void deleteMulti(List<Long> scheduleIds) {
+		scheduleRepository.deleteByIdIn(scheduleIds);
+
+	}
+	
+	public void clearCache() {
+		cacheManager.getCache("all-schedules").clear();
+		cacheManager.getCache("programs-by-time").clear();
+	}
+
+	public List<StatsData> getScheduleStats(ScheduleForm form) {
+		return scheduleRepository.getStats(form);
+	}
 
 	Schedule mapper(ScheduleDto data) {
 		if (data == null) {
@@ -108,17 +130,6 @@ public class ScheduleService {
 		return schedule;
 	}
 
-	@Caching(evict = {
-			@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true),
-			@CacheEvict(cacheNames = {"programs-by-time"}, allEntries = true)
-	})
-	public void deleteMulti(List<Long> scheduleIds) {
-		scheduleRepository.deleteByIdIn(scheduleIds);
-
-	}
-
-	public List<StatsData> getScheduleStats(ScheduleForm form) {
-		return scheduleRepository.getStats(form);
-	}
+	
 
 }
