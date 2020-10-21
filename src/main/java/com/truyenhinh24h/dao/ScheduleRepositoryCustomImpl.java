@@ -38,7 +38,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 					 .andOperator(where("startTime").lte(scheduleForm.getEndTime())));
 			}
 		}
-		query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
+		query.with(pageable);
 		List<Schedule> schedules = mongoTemplate.find(query, Schedule.class);
 		long total = mongoTemplate.count(query, Schedule.class);
 		return new PageImpl<>(schedules, pageable, total);
