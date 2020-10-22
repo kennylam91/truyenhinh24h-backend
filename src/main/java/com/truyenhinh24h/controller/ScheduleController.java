@@ -1,5 +1,6 @@
 package com.truyenhinh24h.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -61,41 +62,51 @@ public class ScheduleController {
 	
 	@PostMapping(path ="/auto-update")
 	public ResponseEntity<Void> autoUpdateSchedules(@RequestBody ScheduleForm form) throws Exception {
-		String url = "";
+		List<Schedule> scheduleList = new ArrayList<>();
 		if(form.getChannelName().contains("THVL")) {
-			url = "https://www.thvl.vn/lich-phat-song/?ngay="+ form.getUpdateDate() + "&kenh=" + form.getChannelName();
+			scheduleList = getScheduleListFromTHVL(form);
 		}
+		
+		if(!scheduleList.isEmpty()) {
+			scheduleService.importMulti(scheduleList);			
+		}
+		return ResponseEntity.ok().build();
+	}
+	
+	private List<Schedule> getScheduleListFromTHVL(ScheduleForm form) throws IOException {
+		String url = "";
+		url = "https://www.thvl.vn/lich-phat-song/?ngay=" + form.getUpdateDate() + "&kenh=" + form.getChannelName();
 		Document doc = Jsoup.connect(url).get();
 		Elements startTimeElements = doc.select(".time");
 		Elements programElements = doc.select(".program");
 		List<String> startTimes = startTimeElements.stream().map(e -> e.ownText()).collect(Collectors.toList());
 		List<String> programs = programElements.stream().map(e -> e.ownText()).collect(Collectors.toList());
 		List<Schedule> scheduleList = new ArrayList<>();
-		for (int i = 0; i< startTimes.size(); i++) {
+		for (int i = 0; i < startTimes.size(); i++) {
 			String timeString = startTimes.get(i);
 			String[] timeArr = timeString.split(":");
 			String[] dateArr = form.getUpdateDate().split("-");
-			if(timeArr.length >=2 && dateArr.length >= 3) {
+			if (timeArr.length >= 2 && dateArr.length >= 3) {
 				Calendar scheduleTime = Calendar.getInstance();
 				scheduleTime.setTimeZone(TimeZone.getTimeZone("GMT+7"));
-				scheduleTime.set(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]), 
+				scheduleTime.set(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]) - 1,
 						Integer.parseInt(dateArr[2]), Integer.parseInt(timeArr[0]), Integer.parseInt(timeArr[1]));
 				Schedule schedule = new Schedule();
 				List<ChannelDto> channelDtoList = channelService.getAll();
 				ChannelDto foundChannelDto = channelDtoList.stream()
 						.filter(c -> c.getName().equalsIgnoreCase(form.getChannelName())).findFirst().orElse(null);
-				if(foundChannelDto != null) {
+				if (foundChannelDto != null) {
 					schedule.setChannelId(foundChannelDto.getId());
 					schedule.setChannelName(foundChannelDto.getName());
 					schedule.setProgramName(programs.get(i));
 					schedule.setStartTime(scheduleTime.getTime());
-					if(i>= 1) {
-						scheduleList.get(i-1).setEndTime(scheduleTime.getTime());
+					if (i >= 1) {
+						scheduleList.get(i - 1).setEndTime(scheduleTime.getTime());
 					}
-					if(i == startTimes.size() -1 ) {
+					if (i == startTimes.size() - 1) {
 						Calendar endOfDay = Calendar.getInstance();
 						endOfDay.setTimeZone(TimeZone.getTimeZone("GMT+7"));
-						endOfDay.set(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]), 
+						endOfDay.set(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]),
 								Integer.parseInt(dateArr[2]), 24, 0);
 						schedule.setEndTime(endOfDay.getTime());
 					}
@@ -103,8 +114,7 @@ public class ScheduleController {
 				}
 			}
 		}
-		scheduleService.importMulti(scheduleList);
-		return ResponseEntity.ok().build();
+		return scheduleList;
 	}
 
 	@PostMapping(path = "/search")
@@ -150,5 +160,6 @@ public class ScheduleController {
 		return schedule;
 
 	}
+	
 
 }

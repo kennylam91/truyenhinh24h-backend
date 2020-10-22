@@ -26,7 +26,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 	@Override
 	public Page<Schedule> search(ScheduleForm scheduleForm, Pageable pageable) {
 		final Query query = new Query();
-		Criteria timeCriteria = new Criteria().andOperator(where("startTime").gte(scheduleForm.getStartTime()),
+		Criteria timeCriteria = where("startTime").gte(scheduleForm.getStartTime()).andOperator(
 				where("startTime").lte(scheduleForm.getEndTime()));
 		if (scheduleForm != null) {
 			if (scheduleForm.getChannelId() != null) {

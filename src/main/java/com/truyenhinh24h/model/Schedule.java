@@ -25,10 +25,10 @@ public class Schedule {
 	@Indexed(name = "schedule_programId_index")
 	private Long programId;
 
-	@Indexed(name = "schedule_startTime_index", expireAfterSeconds = 86400)
+	@Indexed(name = "schedule_startTime_index", expireAfterSeconds = 604800)
 	private Date startTime;
 
-	@Indexed(name = "schedule_endTime_index", expireAfterSeconds = 86400)
+	@Indexed(name = "schedule_endTime_index", expireAfterSeconds = 604800)
 	private Date endTime;
 
 	private String programName;
