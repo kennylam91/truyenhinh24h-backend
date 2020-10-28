@@ -15,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -77,12 +78,12 @@ public class ScheduleController {
 		String url = "";
 		url = "https://www.thvl.vn/lich-phat-song/?ngay=" + form.getUpdateDate() + "&kenh=" + form.getChannelName();
 		Document doc = Jsoup.connect(url).get();
-		Elements startTimeElements = doc.select(".time");
+		List<Element> startTimeElements = doc.select(".time").stream().filter(i -> !i.ownText().contentEquals("")).collect(Collectors.toList());
 		Elements programElements = doc.select(".program");
-		List<String> startTimes = startTimeElements.stream().map(e -> e.ownText())
-				.filter(i -> i != null && i != "" && i.contentEquals(" ")).collect(Collectors.toList());
+		List<String> startTimes = startTimeElements.stream().filter(i -> i.ownText() != null && i.ownText() != "" && i.ownText() != " ")
+				.map(e -> e.ownText()).collect(Collectors.toList());
 		List<String> programs = programElements.stream().map(e -> e.ownText())
-				.filter(i -> i != null && i != "" && i.contentEquals(" ")).collect(Collectors.toList());
+				.filter(i -> i != null && i != "" && i != " ").collect(Collectors.toList());
 		List<Schedule> scheduleList = new ArrayList<>();
 		for (int i = 0; i < startTimes.size(); i++) {
 			String timeString = startTimes.get(i);
