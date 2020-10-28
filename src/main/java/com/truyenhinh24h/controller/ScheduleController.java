@@ -79,11 +79,17 @@ public class ScheduleController {
 		Document doc = Jsoup.connect(url).get();
 		Elements startTimeElements = doc.select(".time");
 		Elements programElements = doc.select(".program");
-		List<String> startTimes = startTimeElements.stream().map(e -> e.ownText()).collect(Collectors.toList());
-		List<String> programs = programElements.stream().map(e -> e.ownText()).collect(Collectors.toList());
+		List<String> startTimes = startTimeElements.stream().map(e -> e.ownText())
+				.filter(i -> i != null && i != "" && i.contentEquals(" ")).collect(Collectors.toList());
+		List<String> programs = programElements.stream().map(e -> e.ownText())
+				.filter(i -> i != null && i != "" && i.contentEquals(" ")).collect(Collectors.toList());
 		List<Schedule> scheduleList = new ArrayList<>();
 		for (int i = 0; i < startTimes.size(); i++) {
 			String timeString = startTimes.get(i);
+			long colonIndex = timeString.indexOf(':');
+			if(colonIndex == -1) {
+				timeString = timeString.substring(0, 2) + ":" + timeString.substring(2);
+			}
 			String[] timeArr = timeString.split(":");
 			String[] dateArr = form.getUpdateDate().split("-");
 			if (timeArr.length >= 2 && dateArr.length >= 3) {
