@@ -27,13 +27,15 @@ public class ApplicationConfiguration extends AbstractMongoClientConfiguration {
 	 */
 	@Value("${spring.data.mongodb.uri}")
 	private String mongoUrl;
+	
+	private final String dataBaseName = "truyenhinh24h_test";
 
 //	public @Bean MongoClient mongoClient() {
 //		return MongoClients.create(mongoUrl);
 //	}
 
 	public @Bean MongoTemplate mongoTemplate() {
-		return new MongoTemplate(mongoClient(), "truyenhinh24h");
+		return new MongoTemplate(mongoClient(), dataBaseName);
 	}
 
 	@Bean
@@ -53,7 +55,7 @@ public class ApplicationConfiguration extends AbstractMongoClientConfiguration {
 
 	@Override
 	protected String getDatabaseName() {
-		return "truyenhinh24h";
+		return dataBaseName;
 	}
 
 	@Override

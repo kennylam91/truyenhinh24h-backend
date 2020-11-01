@@ -1,11 +1,16 @@
 package com.truyenhinh24h.controller;
 
 import java.io.IOException;
+import java.security.cert.CollectionCertStoreParameters;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,22 +19,43 @@ import javax.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
+import org.jsoup.Connection.Method;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.annotation.JsonFormat.Feature;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonValueFormat;
+import com.fasterxml.jackson.databind.util.JSONWrappedObject;
 import com.truyenhinh24h.dao.StatsData;
 import com.truyenhinh24h.model.ChannelDto;
 import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.model.ScheduleDto;
+import com.truyenhinh24h.model.sctv.SctvEvent;
+import com.truyenhinh24h.model.sctv.SctvRequestBody;
+import com.truyenhinh24h.model.sctv.SctvResponseBody;
+import com.truyenhinh24h.model.sctv.SctvSchedule;
 import com.truyenhinh24h.service.ChannelService;
 import com.truyenhinh24h.service.ScheduleService;
 
@@ -64,16 +90,51 @@ public class ScheduleController {
 	@PostMapping(path ="/auto-update")
 	public ResponseEntity<Void> autoUpdateSchedules(@RequestBody ScheduleForm form) throws Exception {
 		List<Schedule> scheduleList = new ArrayList<>();
-		if(form.getChannelName().contains("THVL")) {
+		if (form.getChannelName().contains("THVL")) {
 			scheduleList = getScheduleListFromTHVL(form);
+		} else if (form.getApiSource().contentEquals("SCTV")) {
+			scheduleList = getScheduleListFromSCTV(form);
 		}
-		
-		if(!scheduleList.isEmpty()) {
-			scheduleService.importMulti(scheduleList);			
+
+		if (!scheduleList.isEmpty()) {
+			scheduleService.importMulti(scheduleList);
 		}
 		return ResponseEntity.ok().build();
 	}
 	
+	private List<Schedule> getScheduleListFromSCTV(ScheduleForm form) throws Exception {
+		if (form.getChannelId() == null || form.getChannelName() == null || form.getImportDate() == null) {
+			throw new Exception("Invalid request body");
+		}
+		final Map<Long, String> channelCodeMap = new HashMap<Long, String>();
+
+		channelCodeMap.put(4L, "50");
+		channelCodeMap.put(5L, "96");
+		channelCodeMap.put(6L, "92");
+
+		String url = "https://www.sctv.com.vn/WebMain/LichPhatSong/LayLichPhatSong";
+		RestTemplate restTemplate = new RestTemplate();
+		SctvRequestBody requestBody = new SctvRequestBody(channelCodeMap.get(form.getChannelId()),
+				form.getImportDate().toString());
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", "application/json; charset=UTF-8");
+		HttpEntity<SctvRequestBody> request = new HttpEntity<>(requestBody, headers);
+		String response = restTemplate.postForObject(url, request, String.class);
+		SctvResponseBody bodyObj = new ObjectMapper().readValue(response, SctvResponseBody.class);
+		SctvSchedule sctvSchedule = bodyObj.getLichPhatSong();
+		if (sctvSchedule == null) {
+			throw new Exception("No schedule found");
+		}
+		List<SctvEvent> eventList = sctvSchedule.getEventList();
+		if (eventList != null && !eventList.isEmpty()) {
+			List<Schedule> scheduleList = eventList.stream().map(event -> event.mapper(form))
+					.collect(Collectors.toList());
+			return scheduleList;
+		}
+
+		return Collections.emptyList();
+	}
+
 	private List<Schedule> getScheduleListFromTHVL(ScheduleForm form) throws IOException {
 		String url = "";
 		url = "https://www.thvl.vn/lich-phat-song/?ngay=" + form.getUpdateDate() + "&kenh=" + form.getChannelName();

@@ -1,5 +1,6 @@
 package com.truyenhinh24h.controller;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -44,7 +45,9 @@ public class ScheduleForm extends BaseForm {
 
 	private String updateDate;
 	
+	private LocalDate importDate;
 	
+	private String apiSource;
 	
 	
 	
