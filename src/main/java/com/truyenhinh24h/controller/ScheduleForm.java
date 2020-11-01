@@ -49,6 +49,11 @@ public class ScheduleForm extends BaseForm {
 	
 	private String apiSource;
 	
+	public String getLastCharOfChannelName() {
+		int length = channelName.length();
+		return channelName.substring(length -1, length);
+	}
+	
 	
 	
 }
