@@ -13,4 +13,6 @@ public interface ScheduleRepositoryCustom {
 	Page<Schedule> search(ScheduleForm scheduleForm, Pageable pageable);
 	
 	List<StatsData> getStats(ScheduleForm form);
+	
+	void insertAll(List<Schedule> scheduleList);
 }

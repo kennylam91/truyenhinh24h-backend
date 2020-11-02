@@ -74,6 +74,13 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 
 		}
 	}
+
+	@Override
+	public void insertAll(List<Schedule> scheduleList) {
+		mongoTemplate.insertAll(scheduleList);
+		
+	}
+	
 	
 	
 

@@ -78,8 +78,8 @@ public class ScheduleService {
 			if (schedule.getId() == null) {
 				schedule.setId(sequenceGeneratorService.generateSequence(Schedule.SEQUENCE_NAME));
 			}
-			scheduleRepository.save(schedule);
 		}
+		scheduleRepository.insertAll(schedules);
 	}
 	
 	@Caching(evict = {

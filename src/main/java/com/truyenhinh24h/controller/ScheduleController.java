@@ -36,6 +36,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,6 +66,8 @@ import com.truyenhinh24h.service.ScheduleService;
 @RestController
 @RequestMapping(path = "/rest/v1/schedules")
 public class ScheduleController {
+
+	private static final String UTC_PLUS_7 = "UTC+07:00";
 
 	private static final Logger logger = LogManager.getLogger(ScheduleController.class);
 
@@ -158,8 +161,10 @@ public class ScheduleController {
 		}
 		Elements programElements = doc.select("h3");
 		Elements detailElements = doc.select("h4");
-		List<String> startTimes = startTimeElements.stream().filter(i -> i.ownText() != null && !i.ownText().trim().contentEquals(""))
-				.map(i -> i.ownText()).collect(Collectors.toList());
+		List<String> startTimes = startTimeElements.stream()
+				.filter(i -> i.ownText() != null && !i.ownText().trim().contentEquals(""))
+				.map(i -> i.ownText())
+				.collect(Collectors.toList());
 		List<String> programs = programElements.stream().map(p -> p.ownText()).collect(Collectors.toList());
 		List<String> details = detailElements.stream().map(p -> p.ownText()).collect(Collectors.toList());
 		List<Schedule> scheduleList = new ArrayList<>();
@@ -179,13 +184,13 @@ public class ScheduleController {
 				schedule.setChannelId(form.getChannelId());
 				schedule.setProgramName(programName);
 				LocalDateTime startTimeLocalDate = form.getImportDate().atTime(LocalTime.parse(startTimes.get(i)));
-				Date startTime = Date.from(startTimeLocalDate.atZone(ZoneId.of("UTC+07:00")).toInstant());
+				Date startTime = Date.from(startTimeLocalDate.atZone(ZoneId.of(UTC_PLUS_7)).toInstant());
 				schedule.setStartTime(startTime);
 				if (i >= 1) {
 					scheduleList.get(i - 1).setEndTime(startTime);
 				}
 				if (i == startTimes.size() - 1) {
-					Date endTime = Date.from(form.getImportDate().atTime(23, 59, 59).atZone(ZoneId.of("UTC+07:00"))
+					Date endTime = Date.from(form.getImportDate().atTime(23, 59, 59).atZone(ZoneId.of(UTC_PLUS_7))
 							.toInstant());
 					schedule.setEndTime(endTime);
 				}
@@ -197,50 +202,44 @@ public class ScheduleController {
 
 	private List<Schedule> getScheduleListFromTHVL(ScheduleForm form) throws IOException {
 		String url = "";
-		url = "https://www.thvl.vn/lich-phat-song/?ngay=" + form.getUpdateDate() + "&kenh=" + form.getChannelName();
+		url = "https://www.thvl.vn/lich-phat-song/?ngay=" + form.getImportDate().toString() + "&kenh="
+				+ form.getChannelName();
 		Document doc = Jsoup.connect(url).get();
 		List<Element> startTimeElements = doc.select(".time").stream().filter(i -> !i.ownText().contentEquals(""))
 				.collect(Collectors.toList());
 		Elements programElements = doc.select(".program");
-		List<String> startTimes = startTimeElements.stream().filter(i -> i.ownText() != null && i.ownText() != "" && i.ownText() != " ")
+		List<String> startTimes = startTimeElements.stream()
+				.filter(i -> i.ownText() != null && !StringUtils.isEmpty(i.ownText().trim()))
 				.map(e -> e.ownText()).collect(Collectors.toList());
 		List<String> programs = programElements.stream().map(e -> e.ownText())
-				.filter(i -> i != null && i != "" && i != " ").collect(Collectors.toList());
+				.filter(i -> i != null && !StringUtils.isEmpty(i.trim()))
+				.collect(Collectors.toList());
 		List<Schedule> scheduleList = new ArrayList<>();
 		for (int i = 0; i < startTimes.size(); i++) {
-			String timeString = startTimes.get(i);
+			String timeString = startTimes.get(i).replaceAll("[^0-9:]", "");
 			long colonIndex = timeString.indexOf(':');
-			if(colonIndex == -1) {
+			if (colonIndex == -1) {
 				timeString = timeString.substring(0, 2) + ":" + timeString.substring(2);
 			}
 			String[] timeArr = timeString.split(":");
-			String[] dateArr = form.getUpdateDate().split("-");
-			if (timeArr.length >= 2 && dateArr.length >= 3) {
-				Calendar scheduleTime = Calendar.getInstance();
-				scheduleTime.setTimeZone(TimeZone.getTimeZone("GMT+7"));
-				scheduleTime.set(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]) - 1,
-						Integer.parseInt(dateArr[2]), Integer.parseInt(timeArr[0]), Integer.parseInt(timeArr[1]));
+			if (timeArr.length >= 2) {
 				Schedule schedule = new Schedule();
-				List<ChannelDto> channelDtoList = channelService.getAll();
-				ChannelDto foundChannelDto = channelDtoList.stream()
-						.filter(c -> c.getName().equalsIgnoreCase(form.getChannelName())).findFirst().orElse(null);
-				if (foundChannelDto != null) {
-					schedule.setChannelId(foundChannelDto.getId());
-					schedule.setChannelName(foundChannelDto.getName());
-					schedule.setProgramName(programs.get(i));
-					schedule.setStartTime(scheduleTime.getTime());
-					if (i >= 1) {
-						scheduleList.get(i - 1).setEndTime(scheduleTime.getTime());
-					}
-					if (i == startTimes.size() - 1) {
-						Calendar endOfDay = Calendar.getInstance();
-						endOfDay.setTimeZone(TimeZone.getTimeZone("GMT+7"));
-						endOfDay.set(Integer.parseInt(dateArr[0]), Integer.parseInt(dateArr[1]),
-								Integer.parseInt(dateArr[2]), 24, 0);
-						schedule.setEndTime(endOfDay.getTime());
-					}
-					scheduleList.add(schedule);
+				schedule.setChannelId(form.getChannelId());
+				schedule.setChannelName(form.getChannelName());
+				schedule.setProgramName(programs.get(i));
+				LocalDateTime startTimeLocalDate = form.getImportDate().atTime(LocalTime.parse(timeString));
+				Date startTime = Date.from(startTimeLocalDate.atZone(ZoneId.of(UTC_PLUS_7)).toInstant());
+
+				schedule.setStartTime(startTime);
+				if (i >= 1) {
+					scheduleList.get(i - 1).setEndTime(startTime);
 				}
+				if (i == startTimes.size() - 1) {
+					Date endTime = Date
+							.from(form.getImportDate().atTime(23, 59, 59).atZone(ZoneId.of(UTC_PLUS_7)).toInstant());
+					schedule.setEndTime(endTime);
+				}
+				scheduleList.add(schedule);
 			}
 		}
 		return scheduleList;
