@@ -19,4 +19,6 @@ public class ChannelDto {
 	private boolean vip;
 
 	private Long networkId;
+	
+	private Boolean hasAutoImport = false;
 }

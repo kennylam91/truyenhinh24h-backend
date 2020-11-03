@@ -25,5 +25,7 @@ public class Channel {
 	private boolean vip;
 
 	private Long networkId;
+	
+	private Boolean hasAutoImport = false;
 
 }
