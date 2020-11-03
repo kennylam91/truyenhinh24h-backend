@@ -24,7 +24,7 @@ public class Channel {
 
 	private boolean vip;
 
-	private Long networkId;
+	private String networkName;
 	
 	private Boolean hasAutoImport = false;
 
