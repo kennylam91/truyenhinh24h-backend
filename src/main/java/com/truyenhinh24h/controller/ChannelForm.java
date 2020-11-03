@@ -29,5 +29,6 @@ public class ChannelForm extends BaseForm {
 	
 	private Long[] channelIds;
 	
+	private Boolean hasAutoImport;
 	
 }
