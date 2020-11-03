@@ -88,6 +88,7 @@ public class ChannelController {
 		channel.setLogo(data.getLogo());
 		channel.setNetworkId(data.getNetworkId());
 		channel.setVip(data.isVip());
+		channel.setHasAutoImport(data.getHasAutoImport());
 		return channel;
 	}
 
