@@ -26,8 +26,12 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 	@Override
 	public Page<Schedule> search(ScheduleForm scheduleForm, Pageable pageable) {
 		final Query query = new Query();
+		
 		Criteria timeCriteria = where("startTime").gte(scheduleForm.getStartTime()).andOperator(
 				where("startTime").lte(scheduleForm.getEndTime()));
+		if(scheduleForm.getStartTime() != null && scheduleForm.getEndTime() == null) {
+			timeCriteria = where("startTime").gte(scheduleForm.getStartTime());
+		}
 		if (scheduleForm != null) {
 			if (scheduleForm.getChannelId() != null) {
 				query.addCriteria(where("channelId").is(scheduleForm.getChannelId()));
@@ -35,7 +39,7 @@ public class ScheduleRepositoryCustomImpl implements ScheduleRepositoryCustom {
 			if (scheduleForm.getProgramId() != null) {
 				query.addCriteria(where("programId").is(scheduleForm.getProgramId()));
 			}
-			if (scheduleForm.getStartTime() != null && scheduleForm.getEndTime() != null) {
+			if (scheduleForm.getStartTime() != null) {
 				query.addCriteria(timeCriteria);
 			}
 		}
