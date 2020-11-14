@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import com.truyenhinh24h.common.ImportSource;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,9 +28,11 @@ public class ChannelForm extends BaseForm {
 	private boolean vip = false;
 
 	private String networkName;
-	
+
 	private Long[] channelIds;
-	
+
 	private Boolean hasAutoImport;
-	
+
+	private ImportSource importSource;
+
 }

@@ -16,20 +16,21 @@ import com.truyenhinh24h.dao.ChannelRepository;
 import com.truyenhinh24h.model.ChannelDto;
 import com.truyenhinh24h.model.Channel;
 
-@CacheConfig(cacheNames = {"channels"})
+@CacheConfig(cacheNames = { "channels" })
 @Service
 public class ChannelService {
-	
+
 	@Autowired
 	private ChannelRepository channelRepository;
-	
+
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
-	
-	@Autowired CacheManager cacheManager;
 
-	@CachePut(cacheNames = {"channels"}, key = "#result.id")
-	@CacheEvict(cacheNames = {"all-channels", "programs-by-time"}, allEntries = true)
+	@Autowired
+	CacheManager cacheManager;
+
+	@CachePut(cacheNames = { "channels" }, key = "#result.id")
+	@CacheEvict(cacheNames = { "all-channels", "programs-by-time" }, allEntries = true)
 	public ChannelDto createOrUpdate(Channel channel) {
 		Channel result = null;
 		if (channel.getId() == null) {
@@ -40,7 +41,7 @@ public class ChannelService {
 		}
 		return mapper(result);
 	}
-	
+
 	public void deleteMulti(Long[] ids) {
 		channelRepository.deleteByIdIn(ids);
 		for (Long id : ids) {
@@ -49,20 +50,20 @@ public class ChannelService {
 		cacheManager.getCache("all-channels").clear();
 		cacheManager.getCache("programs-by-time").clear();
 	}
-	
-	@Cacheable(cacheNames = {"all-channels"})
-	public List<ChannelDto> getAll(){
+
+	@Cacheable(cacheNames = { "all-channels" })
+	public List<ChannelDto> getAll() {
 		return channelRepository.findAll().stream().map(this::mapper).collect(Collectors.toList());
 	}
 
-	@Cacheable(cacheNames = {"channels"}, key = "#channelId")
+	@Cacheable(cacheNames = { "channels" }, key = "#channelId")
 	public ChannelDto findById(Long channelId) {
 		Optional<Channel> optional = channelRepository.findById(channelId);
 		return optional.isPresent() ? mapper(optional.get()) : null;
 	}
-	
+
 	Channel mapper(ChannelDto channel) {
-		if(channel == null) {
+		if (channel == null) {
 			return null;
 		}
 		Channel channelEntity = new Channel();
@@ -73,11 +74,12 @@ public class ChannelService {
 		channelEntity.setNetworkName(channel.getNetworkName());
 		channelEntity.setVip(channel.isVip());
 		channelEntity.setHasAutoImport(channel.getHasAutoImport());
+		channelEntity.setImportSource(channel.getImportSource());
 		return channelEntity;
 	}
-	
+
 	ChannelDto mapper(Channel channel) {
-		if(channel == null) {
+		if (channel == null) {
 			return null;
 		}
 		ChannelDto channelDto = new ChannelDto();
@@ -88,8 +90,8 @@ public class ChannelService {
 		channelDto.setNetworkName(channel.getNetworkName());
 		channelDto.setVip(channel.isVip());
 		channelDto.setHasAutoImport(channel.getHasAutoImport());
+		channelDto.setImportSource(channel.getImportSource());
 		return channelDto;
 	}
-
 
 }

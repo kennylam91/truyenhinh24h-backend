@@ -2,9 +2,11 @@ package com.truyenhinh24h.controller;
 
 import java.util.Date;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Value
+@Data
+@AllArgsConstructor
 public class StatsForm {
 
 	private Date startTimeFrom;
