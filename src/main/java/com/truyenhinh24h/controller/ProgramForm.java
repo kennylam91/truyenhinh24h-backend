@@ -62,7 +62,7 @@ public class ProgramForm extends BaseForm {
 				((startTimeFrom == null) && (startTimeTo == null));
 	}
 	public String getOnlyTextName() {
-		return name.replaceAll(Utils.SYMBOL_REGEX, "") + " " + 
-				enName.replaceAll(Utils.SYMBOL_REGEX, "");
+		return (name.replaceAll(Utils.SYMBOL_REGEX, "") + " " + 
+				enName.replaceAll(Utils.SYMBOL_REGEX, "")).toUpperCase();
 	}
 }
