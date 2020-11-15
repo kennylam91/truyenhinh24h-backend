@@ -62,7 +62,8 @@ public class ProgramForm extends BaseForm {
 				((startTimeFrom == null) && (startTimeTo == null));
 	}
 	public String getOnlyTextName() {
-		return (name.replaceAll(Utils.SYMBOL_REGEX, "") + " " + 
-				enName.replaceAll(Utils.SYMBOL_REGEX, "")).toUpperCase();
+		String str1 = name.replaceAll(Utils.SYMBOL_REGEX, "").replaceAll("[//s]{2,}", " ").trim() ;
+		String str2 = enName.replaceAll(Utils.SYMBOL_REGEX, "").replaceAll("[//s]{2,}", " ").trim() ;
+		return (str1 + " " + str2).toUpperCase();
 	}
 }
