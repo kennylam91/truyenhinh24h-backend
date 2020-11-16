@@ -1,19 +1,12 @@
 package com.truyenhinh24h.controller;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -86,7 +79,7 @@ public class ChannelController {
 		channel.setName(data.getName());
 		channel.setDescription(data.getDescription());
 		channel.setLogo(data.getLogo());
-		channel.setNetworkName(data.getNetworkName());
+		channel.setCategory(data.getCategory());
 		channel.setVip(data.isVip());
 		channel.setHasAutoImport(data.getHasAutoImport());
 		return channel;

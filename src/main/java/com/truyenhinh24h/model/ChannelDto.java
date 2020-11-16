@@ -2,6 +2,8 @@ package com.truyenhinh24h.model;
 
 import java.util.Set;
 
+import com.truyenhinh24h.common.ImportSource;
+
 import lombok.Data;
 @Data
 public class ChannelDto {
@@ -18,7 +20,9 @@ public class ChannelDto {
 
 	private boolean vip;
 
-	private String networkName;
+	private String category;
 	
 	private Boolean hasAutoImport = false;
+	
+	private ImportSource importSource;
 }

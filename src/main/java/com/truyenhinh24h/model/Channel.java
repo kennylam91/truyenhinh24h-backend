@@ -4,6 +4,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.truyenhinh24h.common.ImportSource;
+
 import lombok.Data;
 
 @Document(collection = "channels")
@@ -24,8 +26,10 @@ public class Channel {
 
 	private boolean vip;
 
-	private String networkName;
+	private String category;
 	
 	private Boolean hasAutoImport = false;
+	
+	private ImportSource importSource;
 
 }
