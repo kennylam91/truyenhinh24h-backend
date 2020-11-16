@@ -33,7 +33,7 @@ public class ScheduleTaskService {
 	@Autowired
 	private ChannelService channelService;
 
-	@Scheduled(zone = "GMT+7:00", cron = "0 50 8 ? * *")
+	@Scheduled(zone = "GMT+7:00", cron = "0 10 9 ? * *")
 //	@Scheduled(fixedRate = 60000)
 	public void autoUpdateSchedule() {
 		Calendar cal = Calendar.getInstance();
