@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ import com.truyenhinh24h.utils.CommonUtils;
 
 @Service
 public class ScheduleTaskService {
+	
+	private final Logger logger = LoggerFactory.getLogger(ScheduleTaskService.class);
 
 	@Autowired
 	private ScheduleService scheduleService;
@@ -33,8 +37,7 @@ public class ScheduleTaskService {
 	@Autowired
 	private ChannelService channelService;
 
-	@Scheduled(zone = "GMT+7:00", cron = "0 10 9 ? * *")
-//	@Scheduled(fixedRate = 60000)
+	@Scheduled(zone = "GMT+7:00", cron = "0 0 1,5,9 ? * *")
 	public void autoUpdateSchedule() {
 		Calendar cal = Calendar.getInstance();
 		Date now = cal.getTime();
@@ -72,7 +75,7 @@ public class ScheduleTaskService {
 							}
 							scheduleService.importMulti(scheduleList);
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(e.getMessage());
 						}
 					}
 
