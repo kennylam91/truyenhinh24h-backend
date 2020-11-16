@@ -79,7 +79,7 @@ public class ChannelController {
 		channel.setName(data.getName());
 		channel.setDescription(data.getDescription());
 		channel.setLogo(data.getLogo());
-		channel.setNetworkName(data.getNetworkName());
+		channel.setCategory(data.getCategory());
 		channel.setVip(data.isVip());
 		channel.setHasAutoImport(data.getHasAutoImport());
 		return channel;

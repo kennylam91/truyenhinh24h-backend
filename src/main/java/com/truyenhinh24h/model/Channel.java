@@ -26,7 +26,7 @@ public class Channel {
 
 	private boolean vip;
 
-	private String networkName;
+	private String category;
 	
 	private Boolean hasAutoImport = false;
 	

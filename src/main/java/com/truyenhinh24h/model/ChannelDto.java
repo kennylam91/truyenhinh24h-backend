@@ -20,7 +20,7 @@ public class ChannelDto {
 
 	private boolean vip;
 
-	private String networkName;
+	private String category;
 	
 	private Boolean hasAutoImport = false;
 	

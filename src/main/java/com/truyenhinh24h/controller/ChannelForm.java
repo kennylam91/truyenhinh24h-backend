@@ -27,7 +27,7 @@ public class ChannelForm extends BaseForm {
 
 	private boolean vip = false;
 
-	private String networkName;
+	private String category;
 
 	private Long[] channelIds;
 

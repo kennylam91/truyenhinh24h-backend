@@ -71,7 +71,7 @@ public class ChannelService {
 		channelEntity.setName(channel.getName());
 		channelEntity.setDescription(channel.getDescription());
 		channelEntity.setLogo(channel.getLogo());
-		channelEntity.setNetworkName(channel.getNetworkName());
+		channelEntity.setCategory(channel.getCategory());
 		channelEntity.setVip(channel.isVip());
 		channelEntity.setHasAutoImport(channel.getHasAutoImport());
 		channelEntity.setImportSource(channel.getImportSource());
@@ -87,7 +87,7 @@ public class ChannelService {
 		channelDto.setName(channel.getName());
 		channelDto.setDescription(channel.getDescription());
 		channelDto.setLogo(channel.getLogo());
-		channelDto.setNetworkName(channel.getNetworkName());
+		channelDto.setCategory(channel.getCategory());
 		channelDto.setVip(channel.isVip());
 		channelDto.setHasAutoImport(channel.getHasAutoImport());
 		channelDto.setImportSource(channel.getImportSource());
