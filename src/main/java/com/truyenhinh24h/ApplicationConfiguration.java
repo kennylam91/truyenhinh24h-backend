@@ -28,7 +28,7 @@ public class ApplicationConfiguration extends AbstractMongoClientConfiguration {
 	@Value("${spring.data.mongodb.uri}")
 	private String mongoUrl;
 	
-	private final String dataBaseName = "truyenhinh24h_test";
+	private final String dataBaseName = "truyenhinh24h";
 
 //	public @Bean MongoClient mongoClient() {
 //		return MongoClients.create(mongoUrl);
