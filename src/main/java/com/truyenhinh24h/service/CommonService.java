@@ -39,14 +39,14 @@ public class CommonService {
 		if (form.getChannelId() == null || form.getChannelName() == null || form.getImportDate() == null) {
 			throw new Exception("Invalid request body");
 		}
-		final Map<Long, String> channelCodeMap = new HashMap<Long, String>();
+		final Map<Long, String> channelCodeMap = new HashMap<>();
 
-		channelCodeMap.put(4L, "50");
-		channelCodeMap.put(5L, "96");
-		channelCodeMap.put(6L, "92");
-		channelCodeMap.put(20L, "60");
-		channelCodeMap.put(2L, "26");
-		channelCodeMap.put(1L, "23");
+		channelCodeMap.put(1L, "23"); // HBO
+		channelCodeMap.put(2L, "26"); // Fox Movies
+		channelCodeMap.put(4L, "50"); // AXN
+		channelCodeMap.put(5L, "96"); // Discovery Asia
+		channelCodeMap.put(6L, "92"); // Discovery
+		channelCodeMap.put(20L, "60"); // Todaytv
 
 		String url = "https://www.sctv.com.vn/WebMain/LichPhatSong/LayLichPhatSong";
 		RestTemplate restTemplate = new RestTemplate();

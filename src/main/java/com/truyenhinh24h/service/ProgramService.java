@@ -34,6 +34,7 @@ import com.truyenhinh24h.model.Category;
 import com.truyenhinh24h.model.CategoryDto;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
+import com.truyenhinh24h.utils.Mapper;
 
 @Service
 public class ProgramService {
@@ -42,18 +43,17 @@ public class ProgramService {
 
 	@Autowired
 	private ProgramRepository programRepository;
-
 	@Autowired
 	private CategoryRepository categoryRepository;
-	
 	@Autowired
 	private CategoryService categoryService;
-
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
+	@Autowired
+	private Mapper mapper;
 
-	@CachePut(cacheNames = {"programs"}, key = "#result.id")
-	@CacheEvict(cacheNames = {"all-programs"}, allEntries = true)
+	@CachePut(cacheNames = { "programs" }, key = "#result.id")
+	@CacheEvict(cacheNames = { "all-programs" }, allEntries = true)
 	public ProgramDto createOrUpdate(Program program) {
 		Program result = null;
 		if (program.getId() == null) {
@@ -62,18 +62,18 @@ public class ProgramService {
 		} else {
 			result = programRepository.save(program);
 		}
-		return result.getDto();
+		return mapper.fromTo(result, ProgramDto.class);
 	}
 
 	public void deleteMulti(Long[] ids) {
 		programRepository.deleteByIdIn(ids);
 	}
 
-	@Cacheable(cacheNames = {"programs"}, key = "#id")
+	@Cacheable(cacheNames = { "programs" }, key = "#id")
 	public ProgramDto findById(Long id) {
 		Optional<Program> optional = programRepository.findById(id);
 		if (optional.isPresent()) {
-			ProgramDto programDto = optional.get().getDto();
+			ProgramDto programDto = mapper.fromTo(optional.get(), ProgramDto.class);
 			programDto.setCategories(categoryRepository.findByCodeIn(programDto.getCategoryCodes()));
 			return programDto;
 		} else {
@@ -81,12 +81,12 @@ public class ProgramService {
 		}
 	}
 
-	@Cacheable(cacheNames = {"all-programs"})
+	@Cacheable(cacheNames = { "all-programs" })
 	public Page<ProgramDto> getAll(Pageable pageable) {
 		Page<Program> programPage = programRepository.findAll(pageable);
 		List<ProgramDto> programDtoList = Collections.emptyList();
 		if (programPage.hasContent()) {
-			programDtoList = programPage.getContent().stream().map(Program::getDto).collect(Collectors.toList());
+			programDtoList = mapper.fromToList(programPage.getContent(), ProgramDto.class);
 			for (ProgramDto programDto : programDtoList) {
 				if (programDto.getCategoryCodes() != null && programDto.getCategoryCodes().length > 0) {
 					programDto.setCategories(categoryRepository.findByCodeIn(programDto.getCategoryCodes()));
@@ -115,17 +115,17 @@ public class ProgramService {
 			return new PageImpl<>(programDtoList, pageable, programDtoPage.getTotalElements());
 		}
 	}
-	
-	@Cacheable(cacheNames = {"programs-by-time"}, 
-			key = "{#form.getStartTimeFrom(), #form.getStartTimeTo(), #form.getLimit()}", condition = "#form.getIsBroadCasting() == false")
+
+	@Cacheable(cacheNames = {
+			"programs-by-time" }, key = "{#form.getStartTimeFrom(), #form.getStartTimeTo(), #form.getLimit()}", condition = "#form.getIsBroadCasting() == false")
 	public List<ProgramDto> findProgramsForClient(ProgramForm form) {
 		form.setPage(1);
 		form.setSortBy("rank");
 		form.setSortDirection("DESC");
 		return this.search(form).getContent();
 	}
-	
-	public List<ProgramDto> getBroadCastingPrograms(){
+
+	public List<ProgramDto> getBroadCastingPrograms() {
 		ProgramForm form = new ProgramForm();
 		form.setPage(1);
 		form.setLimit(8);
@@ -133,23 +133,6 @@ public class ProgramService {
 		form.setSortDirection("DESC");
 		form.setIsBroadCasting(true);
 		return this.search(form).getContent();
-	}
-
-	Program mapper(ProgramDto programDto) {
-		if (programDto == null) {
-			return null;
-		}
-		Program program = new Program();
-		program.setCategoryCodes(programDto.getCategoryCodes());
-		program.setDescription(programDto.getDescription());
-		program.setLogo(programDto.getLogo());
-		program.setName(programDto.getName());
-		program.setEnName(programDto.getEnName());
-		program.setId(programDto.getId());
-		program.setRank(programDto.getRank());
-		program.setYear(programDto.getYear());
-		program.setTrailer(programDto.getTrailer());
-		return program;
 	}
 
 	@Transactional
@@ -163,24 +146,21 @@ public class ProgramService {
 
 	}
 
-	
-	
-	private Set<Category> findCategoryList(List<Long> categoryCodes){
-		if(categoryCodes.isEmpty()) {
+	private Set<Category> findCategoryList(List<Long> categoryCodes) {
+		if (categoryCodes.isEmpty()) {
 			return Collections.emptySet();
-		}else {
+		} else {
 			List<CategoryDto> categoryDtoList = categoryService.getAll();
 			Set<Category> result = new HashSet<>();
 			for (Long code : categoryCodes) {
-				CategoryDto found = categoryDtoList.stream()
-						.filter(item -> Objects.equals(item.getCode(), code))
+				CategoryDto found = categoryDtoList.stream().filter(item -> Objects.equals(item.getCode(), code))
 						.findFirst().orElse(null);
-				if(found != null) {
+				if (found != null) {
 					result.add(categoryService.mapper(found));
 				}
 			}
 			return result;
-			
+
 		}
 	}
 }

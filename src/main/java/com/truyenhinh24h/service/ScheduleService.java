@@ -25,23 +25,22 @@ import com.truyenhinh24h.dao.ScheduleRepository;
 import com.truyenhinh24h.dao.StatsData;
 import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.model.ScheduleDto;
+import com.truyenhinh24h.utils.Mapper;
 
 @Service
 public class ScheduleService {
 
 	@Autowired
 	private ScheduleRepository scheduleRepository;
-
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
-	
 	@Autowired
 	private CacheManager cacheManager;
+	@Autowired
+	private Mapper mapper;
 
-	@Caching(evict = {
-			@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true),
-			@CacheEvict(cacheNames = {"programs-by-time"}, allEntries = true)
-	})
+	@Caching(evict = { @CacheEvict(cacheNames = { "all-schedules" }, allEntries = true),
+			@CacheEvict(cacheNames = { "programs-by-time" }, allEntries = true) })
 	public ScheduleDto createOrUpdate(Schedule schedule) {
 		Schedule result = null;
 		if (schedule.getId() == null) {
@@ -50,10 +49,10 @@ public class ScheduleService {
 		} else {
 			result = scheduleRepository.save(schedule);
 		}
-		return mapper(result);
+		return mapper.fromTo(result, ScheduleDto.class);
 	}
 
-	@Cacheable(cacheNames = {"all-schedules"})
+	@Cacheable(cacheNames = { "all-schedules" })
 	public Page<ScheduleDto> search(ScheduleForm scheduleForm) {
 		Pageable pageable = PageRequest.of(scheduleForm.getPage() - 1, scheduleForm.getLimit(),
 				Sort.by(Sort.Direction.ASC, "startTime"));
@@ -63,16 +62,14 @@ public class ScheduleService {
 			return new PageImpl<>(Collections.emptyList(), pageable, 0);
 		} else {
 			List<Schedule> scheduleList = schedulePage.getContent();
-			List<ScheduleDto> scheduleDtoList = scheduleList.stream().map(this::mapper).collect(Collectors.toList());
+			List<ScheduleDto> scheduleDtoList = mapper.fromToList(scheduleList, ScheduleDto.class);
 			return new PageImpl<>(scheduleDtoList, pageable, schedulePage.getTotalElements());
 		}
 	}
 
 	@Transactional
-	@Caching(evict = {
-			@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true),
-			@CacheEvict(cacheNames = {"programs-by-time"}, allEntries = true)
-	})
+	@Caching(evict = { @CacheEvict(cacheNames = { "all-schedules" }, allEntries = true),
+			@CacheEvict(cacheNames = { "programs-by-time" }, allEntries = true) })
 	public void importMulti(List<Schedule> schedules) {
 		for (Schedule schedule : schedules) {
 			if (schedule.getId() == null) {
@@ -81,16 +78,14 @@ public class ScheduleService {
 		}
 		scheduleRepository.insertAll(schedules);
 	}
-	
-	@Caching(evict = {
-			@CacheEvict(cacheNames = {"all-schedules"}, allEntries = true),
-			@CacheEvict(cacheNames = {"programs-by-time"}, allEntries = true)
-	})
+
+	@Caching(evict = { @CacheEvict(cacheNames = { "all-schedules" }, allEntries = true),
+			@CacheEvict(cacheNames = { "programs-by-time" }, allEntries = true) })
 	public void deleteMulti(List<Long> scheduleIds) {
 		scheduleRepository.deleteByIdIn(scheduleIds);
 
 	}
-	
+
 	public void clearCache() {
 		cacheManager.getCache("all-schedules").clear();
 		cacheManager.getCache("programs-by-time").clear();
@@ -99,37 +94,5 @@ public class ScheduleService {
 	public List<StatsData> getScheduleStats(ScheduleForm form) {
 		return scheduleRepository.getStats(form);
 	}
-
-	Schedule mapper(ScheduleDto data) {
-		if (data == null) {
-			return null;
-		}
-		Schedule schedule = new Schedule();
-		schedule.setChannelId(data.getChannelId());
-		schedule.setChannelName(data.getChannelName());
-		schedule.setEndTime(data.getEndTime());
-		schedule.setProgramId(data.getProgramId());
-		schedule.setProgramName(data.getProgramName());
-		schedule.setId(data.getId());
-		schedule.setStartTime(data.getStartTime());
-		return schedule;
-	}
-
-	ScheduleDto mapper(Schedule data) {
-		if (data == null) {
-			return null;
-		}
-		ScheduleDto schedule = new ScheduleDto();
-		schedule.setChannelId(data.getChannelId());
-		schedule.setChannelName(data.getChannelName());
-		schedule.setEndTime(data.getEndTime());
-		schedule.setProgramId(data.getProgramId());
-		schedule.setProgramName(data.getProgramName());
-		schedule.setId(data.getId());
-		schedule.setStartTime(data.getStartTime());
-		return schedule;
-	}
-
-	
 
 }

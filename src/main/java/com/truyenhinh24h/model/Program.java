@@ -40,18 +40,5 @@ public class Program {
 
 	private String trailer;
 
-	public ProgramDto getDto() {
-		ProgramDto programDto = new ProgramDto();
-		programDto.setId(id);
-		programDto.setName(name);
-		programDto.setEnName(enName);
-		programDto.setDescription(description);
-		programDto.setCategoryCodes(categoryCodes);
-		programDto.setLogo(logo);
-		programDto.setRank(rank);
-		programDto.setYear(year);
-		programDto.setTrailer(trailer);
-		return programDto;
-	}
 
 }

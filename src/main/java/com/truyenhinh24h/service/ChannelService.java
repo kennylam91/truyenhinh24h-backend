@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.truyenhinh24h.dao.ChannelRepository;
 import com.truyenhinh24h.model.ChannelDto;
+import com.truyenhinh24h.utils.Mapper;
 import com.truyenhinh24h.model.Channel;
 
 @CacheConfig(cacheNames = { "channels" })
@@ -22,12 +23,12 @@ public class ChannelService {
 
 	@Autowired
 	private ChannelRepository channelRepository;
-
 	@Autowired
 	private SequenceGeneratorService sequenceGeneratorService;
-
 	@Autowired
 	CacheManager cacheManager;
+	@Autowired
+	private Mapper mapper;
 
 	@CachePut(cacheNames = { "channels" }, key = "#result.id")
 	@CacheEvict(cacheNames = { "all-channels", "programs-by-time" }, allEntries = true)
@@ -39,7 +40,7 @@ public class ChannelService {
 		} else {
 			result = channelRepository.save(channel);
 		}
-		return mapper(result);
+		return mapper.fromTo(result, ChannelDto.class);
 	}
 
 	public void deleteMulti(Long[] ids) {
@@ -53,45 +54,12 @@ public class ChannelService {
 
 	@Cacheable(cacheNames = { "all-channels" })
 	public List<ChannelDto> getAll() {
-		return channelRepository.findAll().stream().map(this::mapper).collect(Collectors.toList());
+		return mapper.fromToList(channelRepository.findAll(), ChannelDto.class);
 	}
 
 	@Cacheable(cacheNames = { "channels" }, key = "#channelId")
 	public ChannelDto findById(Long channelId) {
 		Optional<Channel> optional = channelRepository.findById(channelId);
-		return optional.isPresent() ? mapper(optional.get()) : null;
+		return optional.isPresent() ? mapper.fromTo(optional.get(), ChannelDto.class) : null;
 	}
-
-	Channel mapper(ChannelDto channel) {
-		if (channel == null) {
-			return null;
-		}
-		Channel channelEntity = new Channel();
-		channelEntity.setId(channel.getId());
-		channelEntity.setName(channel.getName());
-		channelEntity.setDescription(channel.getDescription());
-		channelEntity.setLogo(channel.getLogo());
-		channelEntity.setCategory(channel.getCategory());
-		channelEntity.setVip(channel.isVip());
-		channelEntity.setHasAutoImport(channel.getHasAutoImport());
-		channelEntity.setImportSource(channel.getImportSource());
-		return channelEntity;
-	}
-
-	ChannelDto mapper(Channel channel) {
-		if (channel == null) {
-			return null;
-		}
-		ChannelDto channelDto = new ChannelDto();
-		channelDto.setId(channel.getId());
-		channelDto.setName(channel.getName());
-		channelDto.setDescription(channel.getDescription());
-		channelDto.setLogo(channel.getLogo());
-		channelDto.setCategory(channel.getCategory());
-		channelDto.setVip(channel.isVip());
-		channelDto.setHasAutoImport(channel.getHasAutoImport());
-		channelDto.setImportSource(channel.getImportSource());
-		return channelDto;
-	}
-
 }

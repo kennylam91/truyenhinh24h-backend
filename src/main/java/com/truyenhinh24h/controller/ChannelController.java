@@ -23,6 +23,7 @@ import com.truyenhinh24h.model.Channel;
 import com.truyenhinh24h.model.ChannelDto;
 import com.truyenhinh24h.service.AccessLogService;
 import com.truyenhinh24h.service.ChannelService;
+import com.truyenhinh24h.utils.Mapper;
 
 @RestController
 @RequestMapping("/rest/v1/channels")
@@ -32,14 +33,15 @@ public class ChannelController {
 
 	@Autowired
 	private ChannelService channelService;
-
+	@Autowired
+	private Mapper mapper;
 	@Autowired
 	private AccessLogService logService;
 
 	@PostMapping
 	public ResponseEntity<ChannelDto> createOrUpdate(@Valid @RequestBody ChannelForm channelForm) {
 		logger.info("Create channel");
-		Channel channel = mapper(channelForm);
+		Channel channel = mapper.fromTo(channelForm, Channel.class);
 		ChannelDto channelDto = channelService.createOrUpdate(channel);
 		logger.info("Channel created: {}", channelDto);
 		return ResponseEntity.ok(channelDto);
@@ -51,7 +53,7 @@ public class ChannelController {
 		logger.info("Deleted Channel: {}", channelForm.getChannelIds().toString());
 		return ResponseEntity.ok().build();
 	}
-	
+
 	@PostMapping(path = "/get-all")
 	public ResponseEntity<List<ChannelDto>> getAll() {
 		List<ChannelDto> result = channelService.getAll();
@@ -69,21 +71,4 @@ public class ChannelController {
 		ChannelDto channelDto = channelService.findById(channelId);
 		return ResponseEntity.ok(channelDto);
 	}
-
-	private Channel mapper(ChannelForm data) {
-		if (data == null) {
-			return null;
-		}
-		Channel channel = new Channel();
-		channel.setId(data.getId());
-		channel.setName(data.getName());
-		channel.setDescription(data.getDescription());
-		channel.setLogo(data.getLogo());
-		channel.setCategory(data.getCategory());
-		channel.setVip(data.isVip());
-		channel.setHasAutoImport(data.getHasAutoImport());
-		channel.setImportSource(data.getImportSource());
-		return channel;
-	}
-
 }

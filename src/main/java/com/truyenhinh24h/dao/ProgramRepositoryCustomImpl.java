@@ -14,6 +14,7 @@ import com.truyenhinh24h.controller.ProgramForm;
 import com.truyenhinh24h.model.Program;
 import com.truyenhinh24h.model.ProgramDto;
 import com.truyenhinh24h.model.Schedule;
+import com.truyenhinh24h.utils.Mapper;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -28,6 +29,8 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	@Autowired
+	private Mapper mapper;
 
 	@Override
 	public Page<ProgramDto> search(ProgramForm programForm, Pageable pageable) {
@@ -63,8 +66,7 @@ public class ProgramRepositoryCustomImpl implements ProgramRepositoryCustom {
 		long total = mongoTemplate.count(query, Program.class);
 		query.with(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort()));
 		List<Program> programs = mongoTemplate.find(query, Program.class);
-		List<ProgramDto> programDtoList = programs.stream()
-				.map(Program::getDto).collect(Collectors.toList());
+		List<ProgramDto> programDtoList = mapper.fromToList(programs, ProgramDto.class);
 		for (ProgramDto programDto : programDtoList) {
 			if (schedules != null && !schedules.isEmpty()) {
 				List<Schedule> foundSchedules = schedules.stream()
