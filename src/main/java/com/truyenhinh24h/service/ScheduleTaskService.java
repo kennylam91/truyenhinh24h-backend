@@ -25,7 +25,7 @@ import com.truyenhinh24h.utils.CommonUtils;
 
 @Service
 public class ScheduleTaskService {
-	
+
 	private final Logger logger = LoggerFactory.getLogger(ScheduleTaskService.class);
 
 	@Autowired

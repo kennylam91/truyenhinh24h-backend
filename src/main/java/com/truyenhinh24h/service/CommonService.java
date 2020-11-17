@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,6 +18,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
@@ -24,51 +27,81 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.truyenhinh24h.controller.ProgramForm;
 import com.truyenhinh24h.controller.ScheduleController;
 import com.truyenhinh24h.controller.ScheduleForm;
+import com.truyenhinh24h.model.ChannelDto;
+import com.truyenhinh24h.model.ProgramDto;
 import com.truyenhinh24h.model.Schedule;
 import com.truyenhinh24h.model.sctv.SctvEvent;
 import com.truyenhinh24h.model.sctv.SctvRequestBody;
 import com.truyenhinh24h.model.sctv.SctvResponseBody;
 import com.truyenhinh24h.model.sctv.SctvSchedule;
+import com.truyenhinh24h.utils.CommonUtils;
 
 @Service
 public class CommonService {
+
+	@Autowired
+	private ChannelService channelService;
+	@Autowired
+	private ProgramService programService;
 
 	public List<Schedule> getScheduleListFromSCTV(ScheduleForm form) throws Exception {
 		if (form.getChannelId() == null || form.getChannelName() == null || form.getImportDate() == null) {
 			throw new Exception("Invalid request body");
 		}
-		final Map<Long, String> channelCodeMap = new HashMap<>();
+		List<ChannelDto> channelList = channelService.getAll();
+		ChannelDto channelDto = channelList.stream().filter(i -> i.getId().equals(form.getChannelId())).findFirst()
+				.orElse(null);
+		if (channelDto != null) {
+			String sctvChannelCode = channelDto.getSctvChannelCode();
+			String url = "https://www.sctv.com.vn/WebMain/LichPhatSong/LayLichPhatSong";
+			RestTemplate restTemplate = new RestTemplate();
+			SctvRequestBody requestBody = new SctvRequestBody(sctvChannelCode, form.getImportDate().toString());
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "application/json; charset=UTF-8");
+			HttpEntity<SctvRequestBody> request = new HttpEntity<>(requestBody, headers);
+			String response = restTemplate.postForObject(url, request, String.class);
+			SctvResponseBody bodyObj = new ObjectMapper().readValue(response, SctvResponseBody.class);
+			SctvSchedule sctvSchedule = bodyObj.getLichPhatSong();
+			if (sctvSchedule == null) {
+				throw new Exception("No schedule found");
+			}
+			List<SctvEvent> eventList = sctvSchedule.getEventList();
+			if (eventList != null && !eventList.isEmpty()) {
+				List<Schedule> scheduleList = eventList.stream().map(event -> event.mapper(form))
+						.collect(Collectors.toList());
+				// search program
+				if (channelDto.getIsProgramAutoSearch().booleanValue()) {
+					for (Schedule schedule : scheduleList) {
+						long hour = CommonUtils.getHourInGMT7(schedule.getStartTime());
+						if (hour >= 5) {
+							ProgramForm programForm = new ProgramForm();
+							programForm.setSearchName(schedule.getProgramName().split(":")[0].trim());
+							Page<ProgramDto> pageResult = programService.search(programForm);
+							if (pageResult.hasContent() && pageResult.getTotalElements() == 1) {
+								ProgramDto programFound = pageResult.getContent().get(0);
+								schedule.setProgramId(programFound.getId());
+								String programName = "";
+								if (programFound.isNameSameEnName()) {
+									programName = programFound.getName();
+								} else {
+									programName = programFound.getName() + " - " + programFound.getEnName();
+								}
+								schedule.setProgramName(programName);
+							}
+						}
+					}
+				}
 
-		channelCodeMap.put(1L, "23"); // HBO
-		channelCodeMap.put(2L, "26"); // Fox Movies
-		channelCodeMap.put(4L, "50"); // AXN
-		channelCodeMap.put(5L, "96"); // Discovery Asia
-		channelCodeMap.put(6L, "92"); // Discovery
-		channelCodeMap.put(20L, "60"); // Todaytv
+				return scheduleList;
+			}
 
-		String url = "https://www.sctv.com.vn/WebMain/LichPhatSong/LayLichPhatSong";
-		RestTemplate restTemplate = new RestTemplate();
-		SctvRequestBody requestBody = new SctvRequestBody(channelCodeMap.get(form.getChannelId()),
-				form.getImportDate().toString());
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Content-Type", "application/json; charset=UTF-8");
-		HttpEntity<SctvRequestBody> request = new HttpEntity<>(requestBody, headers);
-		String response = restTemplate.postForObject(url, request, String.class);
-		SctvResponseBody bodyObj = new ObjectMapper().readValue(response, SctvResponseBody.class);
-		SctvSchedule sctvSchedule = bodyObj.getLichPhatSong();
-		if (sctvSchedule == null) {
-			throw new Exception("No schedule found");
+			return Collections.emptyList();
 		}
-		List<SctvEvent> eventList = sctvSchedule.getEventList();
-		if (eventList != null && !eventList.isEmpty()) {
-			List<Schedule> scheduleList = eventList.stream().map(event -> event.mapper(form))
-					.collect(Collectors.toList());
-			return scheduleList;
-		}
-
 		return Collections.emptyList();
+
 	}
 
 	public List<Schedule> getScheduleListFromVTV(ScheduleForm form) throws Exception {

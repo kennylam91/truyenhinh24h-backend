@@ -1,12 +1,6 @@
 package com.truyenhinh24h.controller;
 
-import java.util.Date;
-
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
-import org.springframework.boot.context.properties.bind.DefaultValue;
-
 import com.truyenhinh24h.common.ImportSource;
 
 import lombok.Getter;
@@ -34,5 +28,10 @@ public class ChannelForm extends BaseForm {
 	private Boolean hasAutoImport;
 
 	private ImportSource importSource;
+
+	private String sctvChannelCode;
+	
+	private Boolean isProgramAutoSearch = false;
+
 
 }

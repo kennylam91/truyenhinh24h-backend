@@ -25,4 +25,9 @@ public class ChannelDto {
 	private Boolean hasAutoImport = false;
 	
 	private ImportSource importSource;
+	
+	private String sctvChannelCode;
+	
+	private Boolean isProgramAutoSearch = false;
+
 }
