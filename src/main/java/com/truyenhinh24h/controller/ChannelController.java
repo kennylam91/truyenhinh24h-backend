@@ -82,6 +82,7 @@ public class ChannelController {
 		channel.setCategory(data.getCategory());
 		channel.setVip(data.isVip());
 		channel.setHasAutoImport(data.getHasAutoImport());
+		channel.setImportSource(data.getImportSource());
 		return channel;
 	}
 
