@@ -5,17 +5,14 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
-import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
 import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-
 
 @EnableCaching
 @Configuration
@@ -27,15 +24,11 @@ public class ApplicationConfiguration extends AbstractMongoClientConfiguration {
 	 */
 	@Value("${spring.data.mongodb.uri}")
 	private String mongoUrl;
-	
-	private final String dataBaseName = "truyenhinh24h";
-
-//	public @Bean MongoClient mongoClient() {
-//		return MongoClients.create(mongoUrl);
-//	}
+	@Value("${database.name}")
+	private String databaseName;
 
 	public @Bean MongoTemplate mongoTemplate() {
-		return new MongoTemplate(mongoClient(), dataBaseName);
+		return new MongoTemplate(mongoClient(), databaseName);
 	}
 
 	@Bean
@@ -48,14 +41,15 @@ public class ApplicationConfiguration extends AbstractMongoClientConfiguration {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**");
+				registry.addMapping("/rest/v1/**").allowedOrigins("http://localhost:3000", "http://localhost:4000",
+						"https://truyenhinh24h.live");
 			}
 		};
 	}
 
 	@Override
 	protected String getDatabaseName() {
-		return dataBaseName;
+		return databaseName;
 	}
 
 	@Override
@@ -67,5 +61,5 @@ public class ApplicationConfiguration extends AbstractMongoClientConfiguration {
 	protected boolean autoIndexCreation() {
 		return true;
 	}
-	
+
 }

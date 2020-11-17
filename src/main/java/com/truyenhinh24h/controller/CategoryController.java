@@ -22,7 +22,6 @@ import com.truyenhinh24h.service.CategoryService;
 
 @RestController
 @RequestMapping(path = "/rest/v1/categories")
-@CrossOrigin(origins = { "http://localhost:3000", "https://truyenhinh24h.live" })
 public class CategoryController {
 
 	private static final Logger logger = LogManager.getLogger(CategoryController.class);
