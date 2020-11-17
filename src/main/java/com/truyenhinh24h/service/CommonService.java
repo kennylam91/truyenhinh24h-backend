@@ -78,7 +78,7 @@ public class CommonService {
 						long hour = CommonUtils.getHourInGMT7(schedule.getStartTime());
 						if (hour >= 5) {
 							ProgramForm programForm = new ProgramForm();
-							programForm.setSearchName(schedule.getProgramName().split(":")[0].trim());
+							programForm.setSearchName(schedule.getProgramName().split(":")[0].trim().toUpperCase());
 							Page<ProgramDto> pageResult = programService.search(programForm);
 							if (pageResult.hasContent() && pageResult.getTotalElements() == 1) {
 								ProgramDto programFound = pageResult.getContent().get(0);
