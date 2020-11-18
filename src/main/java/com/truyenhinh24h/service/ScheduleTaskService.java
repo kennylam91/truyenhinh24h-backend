@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -37,13 +36,14 @@ public class ScheduleTaskService {
 	@Autowired
 	private ChannelService channelService;
 
-	@Scheduled(zone = "GMT+7:00", cron = "0 0 1,5,9 ? * *")
+	@Scheduled(zone = "GMT+7:00", cron = "0 10 1,5,8 ? * *")
 	public void autoUpdateSchedule() {
 		Calendar cal = Calendar.getInstance();
 		Date now = cal.getTime();
 		cal.add(Calendar.DATE, 1);
 		Date nextDayInGMT7 = cal.getTime();
 		List<Date> updateDates = Arrays.asList(now, nextDayInGMT7);
+		logger.info("Start auto update schedule {}", now);
 		for (Date updateDate : updateDates) {
 			StatsForm statsForm = new StatsForm(new Date(CommonUtils.getStartOfDay(updateDate)),
 					new Date(CommonUtils.getEndOfDay(updateDate)));
@@ -73,7 +73,11 @@ public class ScheduleTaskService {
 							} else if (channelDto.getImportSource().equals(ImportSource.SCTV)) {
 								scheduleList = commonService.getScheduleListFromSCTV(scheduleForm);
 							}
-							scheduleService.importMulti(scheduleList);
+							if (!scheduleList.isEmpty()) {
+								scheduleService.importMulti(scheduleList);
+								logger.info("Import channel {} - date {} - {} schedule", channelDto.getName(),
+										updateDate.getTime(), scheduleList.size());
+							}
 						} catch (Exception e) {
 							logger.error(e.getMessage());
 						}
