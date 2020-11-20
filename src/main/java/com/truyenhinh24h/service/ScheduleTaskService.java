@@ -1,6 +1,7 @@
 package com.truyenhinh24h.service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -36,15 +37,14 @@ public class ScheduleTaskService {
 	@Autowired
 	private ChannelService channelService;
 
-	@Scheduled(zone = "GMT+7:00", cron = "0 45 1,5,8 ? * *")
+	@Scheduled(zone = "GMT+7:00", cron = "0 02 1,5,9 ? * *")
 	public void autoUpdateSchedule() {
-		Calendar cal = Calendar.getInstance();
-		Date now = cal.getTime();
-		cal.add(Calendar.DATE, 1);
-		Date nextDayInGMT7 = cal.getTime();
-		List<Date> updateDates = Arrays.asList(now, nextDayInGMT7);
-		logger.info("Start auto update schedule {}", now);
-		for (Date updateDate : updateDates) {
+		LocalDate today = LocalDate.now(ZoneId.of("+7"));
+		LocalDate tomorrow = today.plusDays(1);
+		LocalDate next2Days = today.plusDays(2);
+		List<LocalDate> updateDates = Arrays.asList(today, tomorrow, next2Days);
+		logger.info("Start auto update schedule {}", today);
+		for (LocalDate updateDate : updateDates) {
 			StatsForm statsForm = new StatsForm(new Date(CommonUtils.getStartOfDay(updateDate)),
 					new Date(CommonUtils.getEndOfDay(updateDate)));
 			List<StatsData> statsDataList = statsService.getScheduleChannelStats(statsForm);
@@ -61,9 +61,9 @@ public class ScheduleTaskService {
 						ScheduleForm scheduleForm = new ScheduleForm();
 						scheduleForm.setChannelId(channelDto.getId());
 						scheduleForm.setChannelName(channelDto.getName());
-						LocalDate importDate = LocalDate.of(updateDate.getYear() + 1900, updateDate.getMonth() + 1,
-								updateDate.getDate());
-						scheduleForm.setImportDate(importDate);
+//						LocalDate importDate = LocalDate.of(updateDate.getYear() + 1900, updateDate.getMonth() + 1,
+//								updateDate.getDate());
+						scheduleForm.setImportDate(updateDate);
 						try {
 							List<Schedule> scheduleList = new ArrayList<Schedule>();
 							if (channelDto.getImportSource().equals(ImportSource.VTV)) {
@@ -76,7 +76,7 @@ public class ScheduleTaskService {
 							if (!scheduleList.isEmpty()) {
 								scheduleService.importMulti(scheduleList);
 								logger.info("Import channel {} - date {} - {} schedule", channelDto.getName(),
-										updateDate.getTime(), scheduleList.size());
+										updateDate, scheduleList.size());
 							}
 						} catch (Exception e) {
 							logger.error(e.getMessage());
