@@ -1,6 +1,7 @@
 package com.truyenhinh24h.service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -18,6 +19,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
@@ -33,6 +36,7 @@ import com.truyenhinh24h.controller.ScheduleForm;
 import com.truyenhinh24h.model.ChannelDto;
 import com.truyenhinh24h.model.ProgramDto;
 import com.truyenhinh24h.model.Schedule;
+import com.truyenhinh24h.model.htv.HtvResponseBody;
 import com.truyenhinh24h.model.sctv.SctvEvent;
 import com.truyenhinh24h.model.sctv.SctvRequestBody;
 import com.truyenhinh24h.model.sctv.SctvResponseBody;
@@ -46,6 +50,89 @@ public class CommonService {
 	private ChannelService channelService;
 	@Autowired
 	private ProgramService programService;
+
+	private static final Logger logger = LoggerFactory.getLogger(CommonService.class);
+
+	public List<Schedule> getScheduleListFromHTV(ScheduleForm scheduleForm) {
+		try {
+			String HTV_URL = "http://www.htv.com.vn/HTVModule/Services/htvService.aspx";
+			RestTemplate restTemplate = new RestTemplate();
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+			headers.set("Origin", "http://www.htv.com.vn");
+			String body = "method=GetScheduleList&channelid=" + "3" + "&template=AjaxSchedules.xslt&channelcode="
+					+ "htv9" + "&date=" + scheduleForm.getImportDate().getDayOfMonth() + "-"
+					+ scheduleForm.getImportDate().getMonthValue() + "-" + scheduleForm.getImportDate().getYear();
+			HttpEntity<String> request = new HttpEntity<>(body, headers);
+			String response = restTemplate.postForObject(HTV_URL, request, String.class);
+			HtvResponseBody bodyObj = new ObjectMapper().readValue(response, HtvResponseBody.class);
+			if (bodyObj.getSuccess().booleanValue()) {
+				String scheduleData = bodyObj.getData();
+				Document doc = Jsoup.parse(scheduleData);
+				List<Element> startTimeElements = doc.select(".time").stream().collect(Collectors.toList());
+				List<Element> contentElements = doc.select(".name").stream().collect(Collectors.toList());
+				if (startTimeElements.isEmpty()) {
+					throw new Exception("Not found data");
+				} else {
+					List<String> startTimes = startTimeElements.stream()
+							.filter(i -> i.ownText() != null && !i.ownText().trim().contentEquals(""))
+							.map(i -> i.ownText()).collect(Collectors.toList());
+					List<String> contents = contentElements.stream()
+							.filter(i -> i.ownText() != null && !i.ownText().trim().contentEquals(""))
+							.map(i -> i.ownText()).collect(Collectors.toList());
+					if (contents.size() == startTimes.size() && !startTimes.isEmpty()) {
+						List<Schedule> scheduleList = new ArrayList<>();
+						for (int j = 0; j < startTimes.size(); j++) {
+							String timeString = startTimes.get(j);
+							LocalTime startLocalTime = getTime(timeString);
+							LocalDateTime startLocalDateTime = scheduleForm.getImportDate().atTime(startLocalTime);
+							Date startTime = Date.from(
+									startLocalDateTime.atZone(ZoneId.of(ScheduleController.UTC_PLUS_7)).toInstant());
+							String programName = contents.get(j);
+							Schedule schedule = new Schedule();
+							schedule.setStartTime(startTime);
+							schedule.setProgramName(programName);
+							schedule.setChannelId(scheduleForm.getChannelId());
+							schedule.setChannelName(scheduleForm.getChannelName());
+							if (j >= 1) {
+								scheduleList.get(j - 1).setEndTime(startTime);
+							}
+							if (j == startTimes.size() - 1) {
+								Date endTime = Date.from(scheduleForm.getImportDate().atTime(23, 59, 59)
+										.atZone(ZoneId.of(ScheduleController.UTC_PLUS_7)).toInstant());
+								schedule.setEndTime(endTime);
+							}
+							scheduleList.add(schedule);
+						}
+						return scheduleList;
+					}
+				}
+			}
+			return Collections.emptyList();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+	}
+
+	public LocalTime getTime(String timeString) {
+		long colonIndex = timeString.indexOf(':');
+		if (colonIndex == -1) {
+			timeString = timeString.substring(0, 2) + ":" + timeString.substring(2);
+		}
+		String[] timeArr = timeString.split(":");
+		if (timeArr.length >= 2) {
+			return LocalTime.parse(timeString);
+		}
+		return null;
+	}
+
+//	public static void main(String[] args) {
+//		ScheduleForm form = new ScheduleForm();
+//		LocalDate importDate = LocalDate.of(2020, 11, 25);
+//		form.setImportDate(importDate);
+//		getScheduleListFromHTV(form);
+//	}
 
 	public List<Schedule> getScheduleListFromSCTV(ScheduleForm form) throws Exception {
 		if (form.getChannelId() == null || form.getChannelName() == null || form.getImportDate() == null) {
@@ -214,4 +301,5 @@ public class CommonService {
 		}
 		return scheduleList;
 	}
+
 }

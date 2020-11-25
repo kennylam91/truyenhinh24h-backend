@@ -1,7 +1,5 @@
 package com.truyenhinh24h.model.sctv;
 
-import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

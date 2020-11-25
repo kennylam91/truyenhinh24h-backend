@@ -37,13 +37,13 @@ public class CommonUtils {
 		return cal.get(Calendar.HOUR_OF_DAY);
 	}
 
-	public static void main(String[] args) {
-		LocalDate localDate = Instant.ofEpochMilli(1605808800000l).atZone(ZoneId.of("GMT+07:00")).toLocalDate();
-		Long start = getStartOfDay(localDate);
-		Long end = getEndOfDay(localDate);
-		System.out.println(start);
-		System.out.println(end);
-
-	}
+//	public static void main(String[] args) {
+//		LocalDate localDate = Instant.ofEpochMilli(1605808800000l).atZone(ZoneId.of("GMT+07:00")).toLocalDate();
+//		Long start = getStartOfDay(localDate);
+//		Long end = getEndOfDay(localDate);
+//		System.out.println(start);
+//		System.out.println(end);
+//
+//	}
 
 }

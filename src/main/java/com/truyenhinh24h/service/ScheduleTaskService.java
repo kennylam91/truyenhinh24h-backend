@@ -37,7 +37,7 @@ public class ScheduleTaskService {
 	@Autowired
 	private ChannelService channelService;
 
-	@Scheduled(zone = "GMT+7:00", cron = "0 02 1,5,9 ? * *")
+	@Scheduled(zone = "GMT+7:00", cron = "0 10 1,5,16 ? * *")
 	public void autoUpdateSchedule() {
 		LocalDate today = LocalDate.now(ZoneId.of("+7"));
 		LocalDate tomorrow = today.plusDays(1);
@@ -72,6 +72,8 @@ public class ScheduleTaskService {
 								scheduleList = commonService.getScheduleListFromTHVL(scheduleForm);
 							} else if (channelDto.getImportSource().equals(ImportSource.SCTV)) {
 								scheduleList = commonService.getScheduleListFromSCTV(scheduleForm);
+							} else if(channelDto.getImportSource().equals(ImportSource.HTV)) {
+								scheduleList = commonService.getScheduleListFromHTV(scheduleForm);
 							}
 							if (!scheduleList.isEmpty()) {
 								scheduleService.importMulti(scheduleList);
