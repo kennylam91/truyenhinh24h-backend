@@ -37,7 +37,7 @@ public class ScheduleTaskService {
 	@Autowired
 	private ChannelService channelService;
 
-//	@Scheduled(zone = "GMT+7:00", cron = "0 55 1,5,16 ? * *")
+	@Scheduled(zone = "GMT+7:00", cron = "0 35 1,5,17 ? * *")
 	public void autoUpdateSchedule() {
 		LocalDate today = LocalDate.now(ZoneId.of("+7"));
 		LocalDate tomorrow = today.plusDays(1);
