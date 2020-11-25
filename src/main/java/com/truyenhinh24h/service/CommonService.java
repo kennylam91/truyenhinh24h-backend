@@ -54,15 +54,27 @@ public class CommonService {
 	private static final Logger logger = LoggerFactory.getLogger(CommonService.class);
 
 	public List<Schedule> getScheduleListFromHTV(ScheduleForm scheduleForm) {
+		Map<String, Integer> htvChannelMap = new HashMap<>();
+		htvChannelMap.put("HTV1", 11);
+		htvChannelMap.put("HTV2", 12);
+		htvChannelMap.put("HTV3", 13);
+		htvChannelMap.put("HTV7", 1);
+		htvChannelMap.put("HTV9", 3);
+		htvChannelMap.put("HTV Thể Thao", 10);
+		String channelName = scheduleForm.getChannelName().toLowerCase();
+		if (scheduleForm.getChannelName().contentEquals("HTV Thể Thao")) {
+			channelName = "htvtt";
+		}
 		try {
 			String HTV_URL = "http://www.htv.com.vn/HTVModule/Services/htvService.aspx";
 			RestTemplate restTemplate = new RestTemplate();
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 			headers.set("Origin", "http://www.htv.com.vn");
-			String body = "method=GetScheduleList&channelid=" + "3" + "&template=AjaxSchedules.xslt&channelcode="
-					+ "htv9" + "&date=" + scheduleForm.getImportDate().getDayOfMonth() + "-"
-					+ scheduleForm.getImportDate().getMonthValue() + "-" + scheduleForm.getImportDate().getYear();
+			String body = "method=GetScheduleList&channelid=" + htvChannelMap.get(scheduleForm.getChannelName())
+					+ "&template=AjaxSchedules.xslt&channelcode=" + channelName + "&date="
+					+ scheduleForm.getImportDate().getDayOfMonth() + "-" + scheduleForm.getImportDate().getMonthValue()
+					+ "-" + scheduleForm.getImportDate().getYear();
 			HttpEntity<String> request = new HttpEntity<>(body, headers);
 			String response = restTemplate.postForObject(HTV_URL, request, String.class);
 			HtvResponseBody bodyObj = new ObjectMapper().readValue(response, HtvResponseBody.class);
