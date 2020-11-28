@@ -209,7 +209,7 @@ public class CommonService {
 		}
 		String url = "https://vtvgo.vn/ajax-get-list-epg?selected_date_epg=" + form.getImportDate().getYear() + "-"
 				+ form.getImportDate().getMonthValue() + "-" + form.getImportDate().getDayOfMonth() + "&channel_id="
-				+ form.getLastCharOfChannelName();
+				+ form.getVTVChannelId();
 		Document doc = Jsoup.connect(url).get();
 		List<Element> startTimeElements = doc.select(".time-pro").stream().collect(Collectors.toList());
 		if (startTimeElements.isEmpty()) {

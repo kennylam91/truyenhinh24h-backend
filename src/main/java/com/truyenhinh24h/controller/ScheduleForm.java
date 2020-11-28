@@ -44,16 +44,24 @@ public class ScheduleForm extends BaseForm {
 	private Date startTimeTo;
 
 	private String updateDate;
-	
+
 	private LocalDate importDate;
-	
+
 	private String apiSource;
-	
+
 	public String getLastCharOfChannelName() {
 		int length = channelName.length();
-		return channelName.substring(length -1, length);
+		return channelName.substring(length - 1, length);
 	}
-	
-	
-	
+
+	public String getVTVChannelId() {
+		if (channelName.contentEquals("VTV8")) {
+			return "36";
+		} else if (channelName.contentEquals("VTV9")) {
+			return "39";
+		} else {
+			return getLastCharOfChannelName();
+		}
+	}
+
 }
