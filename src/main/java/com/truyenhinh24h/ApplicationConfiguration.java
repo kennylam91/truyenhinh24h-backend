@@ -42,7 +42,7 @@ public class ApplicationConfiguration extends AbstractMongoClientConfiguration {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/rest/v1/**").allowedOrigins("http://localhost:3000", "http://localhost:4000",
-						"https://truyenhinh24h.live", "https://jovial-sound-296107.et.r.appspot.com");
+						"https://truyenhinh24h.live", "https://jovial-sound-296107.et.r.appspot.com", "https://lichtruyenhinh.online");
 			}
 		};
 	}
