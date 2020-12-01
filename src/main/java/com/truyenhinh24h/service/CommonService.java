@@ -73,7 +73,7 @@ public class CommonService {
 			headers.set("Origin", "http://www.htv.com.vn");
 			String body = "method=GetScheduleList&channelid=" + htvChannelMap.get(scheduleForm.getChannelName())
 					+ "&template=AjaxSchedules.xslt&channelcode=" + channelName + "&date="
-					+ scheduleForm.getImportDate().getDayOfMonth() + "-" + scheduleForm.getImportDate().getMonthValue()
+					+ convertToDayString(scheduleForm.getImportDate().getDayOfMonth()) + "-" + scheduleForm.getImportDate().getMonthValue()
 					+ "-" + scheduleForm.getImportDate().getYear();
 			HttpEntity<String> request = new HttpEntity<>(body, headers);
 			String response = restTemplate.postForObject(HTV_URL, request, String.class);
@@ -138,12 +138,21 @@ public class CommonService {
 		}
 		return null;
 	}
+	
+	private String convertToDayString(int day) {
+		if(day < 10) {
+			return "0" + day;
+		}else {
+			return day + "";
+		}
+	}
 
 //	public static void main(String[] args) {
 //		ScheduleForm form = new ScheduleForm();
 //		LocalDate importDate = LocalDate.of(2020, 11, 25);
 //		form.setImportDate(importDate);
 //		getScheduleListFromHTV(form);
+//		System.out.println(convertToDayString(20));
 //	}
 
 	public List<Schedule> getScheduleListFromSCTV(ScheduleForm form) throws Exception {

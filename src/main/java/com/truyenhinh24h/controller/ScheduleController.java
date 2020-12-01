@@ -66,6 +66,8 @@ public class ScheduleController {
 			scheduleList = commonService.getScheduleListFromSCTV(form);
 		} else if (form.getApiSource().contentEquals("VTV")) {
 			scheduleList = commonService.getScheduleListFromVTV(form);
+		} else if(form.getApiSource().contentEquals("HTV")) {
+			scheduleList = commonService.getScheduleListFromHTV(form);
 		}
 
 		if (!scheduleList.isEmpty()) {
