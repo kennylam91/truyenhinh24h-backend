@@ -17,7 +17,7 @@ public class Utils {
 			"HTTP_FORWARDED_FOR", "HTTP_FORWARDED", "HTTP_VIA", "REMOTE_ADDR" };
 	
 //	public static final String SYMBOL_REGEX = "[!@#$%^&*()_+~;',./<>?:\\\"-=]";
-	public static final String SYMBOL_REGEX = "[\\:\\-\\&\\.\\(\\)]";
+	public static final String SYMBOL_REGEX = "[\\!\\:\\-\\&\\.\\(\\)]";
 
 	public static String getClientIpAddress(HttpServletRequest request) {
 		for (String header : HEADERS_TO_TRY) {
