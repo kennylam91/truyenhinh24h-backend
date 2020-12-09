@@ -2,6 +2,8 @@ package com.truyenhinh24h.controller;
 
 import java.util.Objects;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import lombok.Setter;
@@ -34,6 +36,22 @@ public class BaseForm {
 			return Sort.Direction.DESC;
 		}
 		return Sort.Direction.ASC;
+	}
+
+	public Pageable getPageable() {
+		Sort sort = Sort.unsorted();
+		if (sortBy != null && !sortBy.contentEquals("")) {
+			if (sortDirection.contentEquals("DESC")) {
+				sort = Sort.by(sortBy).descending();
+			} else {
+				sort = Sort.by(sortBy).ascending();
+			}
+		}
+		if (page == null || limit == null) {
+			return Pageable.unpaged();
+		} else {
+			return PageRequest.of(page, limit, sort);
+		}
 	}
 
 	@Override
@@ -78,6 +96,5 @@ public class BaseForm {
 			return false;
 		return true;
 	}
-	
-	
+
 }
