@@ -65,12 +65,12 @@ public class ProgramController {
 
 	@GetMapping(path = "/{programId}")
 	public ResponseEntity<ProgramDto> getDetail(@PathVariable Long programId, HttpServletRequest request) {
-		AccessLog log = new AccessLog();
-		log.setCreatedAt(new Date());
-		log.setEndPoint("/programs/" + programId);
-		log.setIp(Utils.getClientIpAddress(request));
-		log.setMethod(HttpMethod.GET);
-		accessLogService.createOrUpdate(log);
+//		AccessLog log = new AccessLog();
+//		log.setCreatedAt(new Date());
+//		log.setEndPoint("/programs/" + programId);
+//		log.setIp(Utils.getClientIpAddress(request));
+//		log.setMethod(HttpMethod.GET);
+//		accessLogService.createOrUpdate(log);
 		ProgramDto programDto = programService.findById(programId);
 		return ResponseEntity.ok(programDto);
 	}

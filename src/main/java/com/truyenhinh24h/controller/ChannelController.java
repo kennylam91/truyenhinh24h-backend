@@ -62,12 +62,12 @@ public class ChannelController {
 
 	@GetMapping(path = "/{channelId}")
 	public ResponseEntity<ChannelDto> getDetail(@PathVariable Long channelId, HttpServletRequest request) {
-		AccessLog log = new AccessLog();
-		log.setCreatedAt(new Date());
-		log.setEndPoint("/channels/" + channelId);
-		log.setIp(Utils.getClientIpAddress(request));
-		log.setMethod(HttpMethod.GET);
-		logService.createOrUpdate(log);
+//		AccessLog log = new AccessLog();
+//		log.setCreatedAt(new Date());
+//		log.setEndPoint("/channels/" + channelId);
+//		log.setIp(Utils.getClientIpAddress(request));
+//		log.setMethod(HttpMethod.GET);
+//		logService.createOrUpdate(log);
 		ChannelDto channelDto = channelService.findById(channelId);
 		return ResponseEntity.ok(channelDto);
 	}
