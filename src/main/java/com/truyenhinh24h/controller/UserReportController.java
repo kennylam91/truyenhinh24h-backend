@@ -48,7 +48,7 @@ public class UserReportController {
 		ChannelDto foundChannel = channelService.findById(userReportForm.getChannelId());
 
 		mail.setMailContent(
-				"Channel: " + foundChannel.getName() + " \nDate: " + userReportForm.getDateInGMTPlus7());
+				"Channel: " + foundChannel.getName() + " \nDate: " + userReportForm.getDate());
 		mailService.sendEmail(mail);
 
 		return ResponseEntity.ok(userReportService.create(userReportForm));

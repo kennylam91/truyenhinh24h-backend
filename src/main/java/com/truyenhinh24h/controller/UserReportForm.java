@@ -6,6 +6,8 @@ import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import lombok.Data;
 
 @Data
@@ -17,13 +19,13 @@ public class UserReportForm {
 	private Long channelId;
 
 	private String content;
-
-	private Date time = new Date();
 	
-	public String getDateInGMTPlus7(){
-		LocalDate localDate = time.toInstant()
-				.atZone(ZoneId.of("+7"))
-				.toLocalDate();
-		return localDate.toString();
-	}
+	private String date;
+
+//	public String getDateInGMTPlus7(){
+//		LocalDate localDate = time.toInstant()
+//				.atZone(ZoneId.of("+7"))
+//				.toLocalDate();
+//		return localDate.toString();
+//	}
 }

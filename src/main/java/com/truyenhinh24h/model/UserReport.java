@@ -2,6 +2,7 @@ package com.truyenhinh24h.model;
 
 import java.util.Date;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -24,5 +25,7 @@ public class UserReport {
 	
 	private String content;
 	
-	private Date time;
+	private String date;
+	
+	private Date createdAt = new Date();
 }
