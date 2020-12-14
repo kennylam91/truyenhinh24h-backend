@@ -1,5 +1,7 @@
 package com.truyenhinh24h.controller;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
@@ -17,4 +19,11 @@ public class UserReportForm {
 	private String content;
 
 	private Date time = new Date();
+	
+	public String getDateInGMTPlus7(){
+		LocalDate localDate = time.toInstant()
+				.atZone(ZoneId.of("+7"))
+				.toLocalDate();
+		return localDate.toString();
+	}
 }
