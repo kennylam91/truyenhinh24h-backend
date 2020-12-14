@@ -14,7 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.truyenhinh24h.model.Channel;
+import com.truyenhinh24h.model.ChannelDto;
+import com.truyenhinh24h.model.Mail;
 import com.truyenhinh24h.model.UserReportDto;
+import com.truyenhinh24h.service.ChannelService;
+import com.truyenhinh24h.service.MailService;
 import com.truyenhinh24h.service.UserReportService;
 import com.truyenhinh24h.utils.Mapper;
 
@@ -26,12 +31,26 @@ public class UserReportController {
 	private UserReportService userReportService;
 	@Autowired
 	private Mapper mapper;
+	@Autowired
+	private MailService mailService;
+	@Autowired
+	private ChannelService channelService;
 
 	private static final Logger logger = LoggerFactory.getLogger(UserReportController.class);
 
 	@PostMapping
 	public ResponseEntity<UserReportDto> create(@Valid @RequestBody UserReportForm userReportForm) {
 		logger.info("Create user report form");
+		Mail mail = new Mail();
+		mail.setMailFrom("truyenhinh24h.live@gmail.com");
+		mail.setMailTo("phamvanlam1991@gmail.com");
+		mail.setMailSubject("Truyenhinh24h.live User Report");
+		ChannelDto foundChannel = channelService.findById(userReportForm.getChannelId());
+
+		mail.setMailContent(
+				"Channel: " + foundChannel.getName() + " \nDate: " + userReportForm.getDateInGMTPlus7());
+		mailService.sendEmail(mail);
+
 		return ResponseEntity.ok(userReportService.create(userReportForm));
 	}
 
